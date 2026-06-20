@@ -10,7 +10,7 @@
   --blue: #2453e6;
   --coral: #ff6247;
   --line: #dcd9d0;
-  --sidebar-width: 102px;
+  --sidebar-width: 124px;
   --header-height: 76px;
 }
 
@@ -57,14 +57,15 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 .team-sidebar {
   position: fixed;
   z-index: 40;
-  left: 0;
+  left: auto;
+  right: 0;
   top: var(--header-height);
   bottom: 0;
   width: var(--sidebar-width);
   height: calc(100dvh - var(--header-height));
-  padding: 18px 10px 24px;
+  padding: 18px 12px 24px;
   background: #fbfaf7;
-  border-right: 1px solid var(--line);
+  border-left: 1px solid var(--line);
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior-y: contain;
@@ -74,15 +75,15 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 }
 .team-sidebar::-webkit-scrollbar { display: none; }
 .sidebar-title { margin: 0 0 14px; color: #8a8983; font-size: 9px; font-weight: 800; line-height: 1.35; letter-spacing: .14em; text-align: center; text-transform: uppercase; }
-.team-list { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-.team-button { position: relative; width: 70px; height: 62px; min-height: 62px; padding: 0; display: grid; place-items: center; border: 0; border-radius: 16px; background: transparent; cursor: pointer; transition: background .18s ease, transform .18s ease; }
-.team-button::before { content: ''; position: absolute; left: 0; top: 17px; width: 3px; height: 28px; border-radius: 0 4px 4px 0; background: var(--blue); opacity: 0; transform: scaleY(.35); transition: .18s ease; }
+.team-list { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.team-button { position: relative; width: 86px; height: 78px; min-height: 78px; padding: 0; display: grid; place-items: center; border: 0; border-radius: 18px; background: transparent; cursor: pointer; transition: background .18s ease, transform .18s ease; }
+.team-button::before { content: ''; position: absolute; right: 0; top: 19px; width: 4px; height: 38px; border-radius: 4px 0 0 4px; background: var(--blue); opacity: 0; transform: scaleY(.35); transition: .18s ease; }
 .team-button:hover { background: #f0eee8; }
 .team-button:hover .sidebar-team-mark { transform: translateY(-1px); }
 .team-button.active { background: #edf1ff; }
 .team-button.active::before { opacity: 1; transform: scaleY(1); }
 .team-button.active .sidebar-team-mark { border-color: #b8c5ff; box-shadow: 0 5px 14px rgba(36,83,230,.15); }
-.team-tooltip { position: absolute; left: 68px; top: 50%; z-index: 5; padding: 7px 10px; border-radius: 6px; background: var(--ink); color: #fff; font-size: 11px; white-space: nowrap; opacity: 0; pointer-events: none; transform: translate(-4px, -50%); transition: .18s; }
+.team-tooltip { position: absolute; right: 68px; top: 50%; z-index: 5; padding: 7px 10px; border-radius: 6px; background: var(--ink); color: #fff; font-size: 11px; white-space: nowrap; opacity: 0; pointer-events: none; transform: translate(4px, -50%); transition: .18s; }
 .team-button:hover .team-tooltip { opacity: 1; transform: translate(0, -50%); }
 .team-mark { position: relative; width: 44px; height: 50px; display: grid; place-items: center; overflow: hidden; color: #fff; background: linear-gradient(135deg, var(--team-primary) 0 58%, var(--team-secondary) 58%); border: 2px solid #fff; border-radius: 12px 12px 18px 18px; box-shadow: 0 2px 0 #b9b7af, 0 5px 14px rgba(20,20,20,.12); font: 800 11px/1 'Manrope', sans-serif; letter-spacing: .03em; }
 .team-mark::before { content: ''; position: absolute; inset: 5px; border: 1px solid rgba(255,255,255,.7); border-radius: 8px 8px 13px 13px; }
@@ -95,25 +96,25 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 .team-logo-mark .team-logo-fallback:not([hidden]) { display: grid; }
 .sidebar-team-mark {
   position: relative;
-  width: 48px;
-  height: 48px;
+  width: 62px;
+  height: 62px;
   padding: 0;
   background: #fff;
   border: 1px solid #e5e3dc;
-  border-radius: 13px;
-  box-shadow: 0 3px 9px rgba(25,25,25,.07);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(25,25,25,.08);
   transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
 }
 .sidebar-team-mark img {
   position: absolute;
   inset: 6px;
   width: calc(100% - 12px);
-  height: calc(100% - 11px);
+  height: calc(100% - 12px);
   object-fit: contain;
   object-position: center;
 }
 
-main, footer { margin-left: var(--sidebar-width); }
+main, footer { margin-right: var(--sidebar-width); }
 main { padding-top: var(--header-height); }
 .hero { min-height: 660px; display: grid; grid-template-columns: 1fr 1fr; background: #eeece5; border-bottom: 1px solid var(--line); }
 .hero-copy { padding: clamp(70px, 8vw, 120px) clamp(42px, 7vw, 110px); display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
@@ -129,9 +130,9 @@ main { padding-top: var(--header-height); }
 .hero-stats span { display: flex; flex-direction: column; gap: 3px; }
 .hero-stats strong { color: var(--ink); font: 700 21px/1 'Manrope', sans-serif; }
 .shop-hero {
-  min-height: 430px;
-  grid-template-columns: minmax(0, .92fr) minmax(320px, .72fr);
-  align-items: stretch;
+  min-height: 0;
+  grid-template-columns: 1fr;
+  align-items: start;
   margin: 0 clamp(18px, 3vw, 34px);
   border: 1px solid var(--line);
   border-top: 0;
@@ -151,21 +152,6 @@ main { padding-top: var(--header-height); }
   margin: 16px 0 22px;
   font-size: 15px;
   line-height: 1.5;
-}
-.shop-hero .hero-art {
-  min-height: 428px;
-}
-.shop-hero .hero-word {
-  inset: 9% auto auto 8%;
-  font-size: clamp(90px, 11vw, 170px);
-}
-.shop-hero .hero-jersey-image {
-  width: min(74%, 420px);
-  height: min(78%, 390px);
-}
-.shop-hero .hero-caption {
-  right: 24px;
-  bottom: 22px;
 }
 
 .home-hero {
@@ -256,12 +242,6 @@ main { padding-top: var(--header-height); }
 .home-catalog { padding-top: 72px; padding-bottom: 72px; border-top: 1px solid var(--line); }
 .home-catalog + .home-catalog { padding-top: 0; }
 
-.hero-art { position: relative; min-width: 0; overflow: hidden; display: grid; place-items: center; background: var(--hero-color); isolation: isolate; }
-.hero-art::before { content: ''; position: absolute; width: 560px; height: 560px; border: 1px solid rgba(255,255,255,.25); border-radius: 50%; box-shadow: 0 0 0 80px rgba(255,255,255,.05), 0 0 0 160px rgba(255,255,255,.04); }
-.hero-art::after { content: ''; position: absolute; inset: auto -12% -33% auto; width: 70%; height: 80%; background: var(--hero-accent); border-radius: 50% 50% 0 0; opacity: .9; transform: rotate(-18deg); z-index: -1; }
-.hero-word { position: absolute; inset: 7% auto auto 7%; color: rgba(255,255,255,.12); font: 800 clamp(110px, 15vw, 240px)/1 'Manrope', sans-serif; letter-spacing: -.1em; }
-.hero-jersey-image { position: relative; z-index: 2; width: min(82%, 620px); height: min(82%, 610px); object-fit: contain; filter: drop-shadow(0 28px 24px rgba(0,0,0,.28)); transform: rotate(-4deg); transition: transform .45s ease; }
-.hero-art:hover .hero-jersey-image { transform: rotate(-2deg) scale(1.025); }
 .hero-shirt { position: relative; width: min(350px, 54%); height: 400px; filter: drop-shadow(0 28px 25px rgba(0,0,0,.25)); transform: rotate(-5deg); }
 .shirt-body { position: absolute; inset: 0 14% 0; display: flex; flex-direction: column; align-items: center; padding-top: 58px; background: linear-gradient(115deg, rgba(255,255,255,.98), rgba(236,236,229,.9)); clip-path: polygon(17% 0, 36% 10%, 64% 10%, 83% 0, 100% 16%, 88% 30%, 88% 100%, 12% 100%, 12% 30%, 0 16%); }
 .shirt-body::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(100deg, transparent 0 18px, rgba(0,0,0,.025) 18px 20px); }
@@ -271,8 +251,6 @@ main { padding-top: var(--header-height); }
 .shirt-collar { position: absolute; top: 0; width: 74px; height: 52px; border: 12px solid var(--hero-color); border-top: 0; border-radius: 0 0 40px 40px; z-index: 2; }
 .shirt-body .team-mark { z-index: 2; margin: 15px 0 44px; }
 .shirt-body strong { position: relative; z-index: 2; color: var(--hero-color); font: 800 105px/1 'Manrope', sans-serif; letter-spacing: -.08em; }
-.hero-caption { position: absolute; right: 36px; bottom: 28px; color: rgba(255,255,255,.75); font-size: 11px; line-height: 1.5; letter-spacing: .12em; text-align: right; text-transform: uppercase; }
-
 .catalog-section { padding: 90px clamp(30px, 5vw, 76px) 110px; background: var(--cream); }
 .shop-catalog { padding-top: 34px; }
 .section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 30px; margin-bottom: 15px; }
@@ -332,7 +310,7 @@ main { padding-top: var(--header-height); }
 .product-category { margin: 0 0 7px; color: #898880; font-size: 10px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
 .product-info h3 { min-height: 45px; margin: 0; font: 650 16px/1.35 'Manrope', sans-serif; letter-spacing: -.025em; }
 .product-title-button { width: 100%; padding: 0; border: 0; background: transparent; text-align: left; cursor: pointer; }
-.product-bottom { margin-top: 8px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.product-bottom { margin-top: 0px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .price { margin: 0; font-weight: 700; }
 .price span { margin-left: 7px; color: #9d9b94; font-size: 12px; font-weight: 400; text-decoration: line-through; }
 .quick-add { height: 36px; padding: 0 11px 0 14px; display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--ink); background: transparent; font-size: 11px; font-weight: 700; cursor: pointer; }
@@ -348,12 +326,12 @@ main { padding-top: var(--header-height); }
 .back-button:hover { color: var(--blue); }
 .back-button svg { width: 17px; }
 .product-detail-grid { max-width: 1300px; margin: 38px auto 0; display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(350px, .92fr); gap: clamp(42px, 7vw, 105px); align-items: start; }
+.detail-media { display: grid; gap: 16px; align-content: start; }
 .detail-image { position: relative; min-height: 650px; overflow: hidden; background: #e8e6de; }
 .detail-image::after { content: ''; position: absolute; right: -15%; bottom: -20%; width: 70%; height: 60%; border-radius: 50%; background: var(--product-color); opacity: .13; }
 .detail-image img { width: 100%; height: 100%; min-height: 650px; position: absolute; inset: 0; object-fit: cover; mix-blend-mode: multiply; }
 .jersey-detail-image { background: #f1f0eb; }
-.jersey-detail-image img { padding: clamp(30px, 5vw, 70px); object-fit: contain; mix-blend-mode: normal; }
-.detail-team-mark { position: absolute; z-index: 3; left: 24px; bottom: 24px; }
+.jersey-detail-image img { padding: clamp(10px, 2vw, 40px); object-fit: contain; mix-blend-mode: normal; }
 .detail-copy { padding-top: 28px; }
 .detail-copy .eyebrow { margin-bottom: 17px; }
 .detail-copy h1 { max-width: 620px; margin: 0; font: 700 clamp(42px, 4.5vw, 70px)/1.02 'Manrope', sans-serif; letter-spacing: -.06em; }
@@ -384,6 +362,85 @@ main { padding-top: var(--header-height); }
 .detail-benefits { margin-top: 28px; display: grid; gap: 12px; color: #72716a; font-size: 12px; }
 .detail-benefits span { display: flex; justify-content: space-between; gap: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
 .detail-benefits strong { color: var(--ink); }
+.detail-gallery-wrap {
+  margin-top: 0;
+}
+.detail-gallery-toolbar {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.detail-gallery-toolbar strong {
+  font-size: 13px;
+}
+.detail-gallery-nav {
+  display: flex;
+  gap: 8px;
+}
+.detail-gallery-nav button {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  background: #fff;
+  cursor: pointer;
+}
+.detail-gallery-nav button:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+}
+.detail-gallery-nav button svg {
+  width: 15px;
+}
+.detail-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+  gap: 10px;
+}
+.detail-gallery-carousel {
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% - 20px) / 3);
+  grid-template-columns: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 6px;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  cursor: grab;
+  user-select: none;
+  touch-action: pan-x;
+}
+.detail-gallery-carousel::-webkit-scrollbar {
+  display: none;
+}
+.detail-gallery-carousel.dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
+}
+.detail-gallery button {
+  padding: 0;
+  border: 1px solid var(--line);
+  background: #fff;
+  cursor: pointer;
+  scroll-snap-align: start;
+  transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+.detail-gallery button.active {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 1px var(--ink);
+}
+.detail-gallery button:hover {
+  transform: translateY(-1px);
+}
+.detail-gallery img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
+}
 
 .checkout-page { padding-top: 48px; }
 .checkout-heading { max-width: 780px; margin: 48px 0 48px; }
@@ -482,7 +539,6 @@ footer p { margin: 0; color: #a7a7a2; }
     margin: 0 18px;
     grid-template-columns: 1fr;
   }
-  .shop-hero .hero-art { min-height: 320px; }
   .shop-catalog { padding-top: 24px; }
   .home-hero-media { min-height: 560px; }
   .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 20px; }
@@ -498,7 +554,7 @@ footer p { margin: 0; color: #a7a7a2; }
 }
 
 @media (max-width: 800px) {
-  :root { --header-height: 66px; --sidebar-width: 72px; }
+  :root { --header-height: 66px; --sidebar-width: 84px; }
   .site-header { padding: 0 16px; }
   .brand > span:last-child { display: none; }
   .search-box { display: none; }
@@ -514,18 +570,18 @@ footer p { margin: 0; color: #a7a7a2; }
   }
   .team-list { gap: 4px; }
   .team-button {
-    width: 66px;
-    height: 57px;
-    min-height: 57px;
+    width: 76px;
+    height: 68px;
+    min-height: 68px;
     padding: 0;
     border-radius: 14px;
   }
-  .team-button::before { top: 15px; height: 27px; }
+  .team-button::before { top: 17px; height: 32px; }
   .team-button .sidebar-team-mark {
-    width: 45px;
-    height: 45px;
+        width: 60px;
+        height: 60px;
     padding: 0;
-    border-radius: 12px;
+    border-radius: 14px;
     font-size: 9px;
   }
   .team-button .sidebar-team-mark img {
@@ -544,30 +600,18 @@ footer p { margin: 0; color: #a7a7a2; }
   .hero h1 { font-size: clamp(52px, 16vw, 78px); }
   .hero-description { margin: 25px 0; font-size: 15px; }
   .hero-stats { margin-top: 42px; gap: 18px; }
-  .hero-art { min-height: 490px; }
-  .hero-jersey-image { width: 88%; height: 84%; }
   .shop-hero {
-    margin: 0 10px;
+    margin: 0 0px;
   }
   .shop-hero .hero-copy {
-    padding: 28px 18px 22px;
+    padding: 28px 18px 5px;
   }
   .shop-hero h1 {
     font-size: clamp(34px, 11vw, 52px);
   }
   .shop-hero .hero-description {
-    margin: 14px 0 18px;
+    margin: 14px 0 5px;
     font-size: 14px;
-  }
-  .shop-hero .hero-art {
-    min-height: 250px;
-  }
-  .shop-hero .hero-word {
-    font-size: clamp(72px, 24vw, 130px);
-  }
-  .shop-hero .hero-jersey-image {
-    width: 72%;
-    height: 78%;
   }
   .shop-catalog {
     padding-top: 16px;
@@ -587,17 +631,18 @@ footer p { margin: 0; color: #a7a7a2; }
   .quick-add { padding: 0 10px; }
   .story-section { padding: 82px 22px; }
   .story-section h2 { font-size: 39px; }
-  .product-page, .checkout-page { padding: 30px 16px 75px; }
+  .product-page, .checkout-page { padding: 15px 16px 75px; }
   .product-detail-grid { margin-top: 26px; grid-template-columns: 1fr; gap: 28px; }
   .detail-image, .detail-image img { min-height: 440px; }
   .detail-copy { padding-top: 4px; }
   .detail-copy h1 { font-size: 43px; }
   .detail-benefits span { align-items: flex-start; flex-direction: column; gap: 4px; }
+  .detail-gallery-carousel { grid-auto-columns: calc((100% - 20px) / 3); }
   .checkout-heading { margin: 38px 0 32px; }
   .checkout-heading h1 { font-size: 44px; }
   .checkout-grid { gap: 22px; }
   .checkout-form, .order-summary { padding: 22px 16px; }
-  .custom-page { padding: 30px 16px 75px; }
+  .custom-page { padding: 15px 16px 75px; }
   .custom-heading { margin: 38px 0 32px; }
   .custom-heading h1 { font-size: 43px; }
   .custom-preview-card, .custom-form { padding: 18px 14px; }

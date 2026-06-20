@@ -92,23 +92,119 @@ export const jerseyPrintByTeam = {
 
 const photos = {
   shoes: [
-    'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=85',
-    'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=900&q=85',
+    '/product-gallery/shared/shoes-primary.jpg',
+    '/product-gallery/shared/shoes-alt-1.jpg',
+    '/product-gallery/shared/shoes-alt-2.jpg',
   ],
   sandals: [
-    'https://images.unsplash.com/photo-1603487742131-4160ec999306?auto=format&fit=crop&w=900&q=85',
+    '/product-gallery/shared/sandals-primary.jpg',
+    '/product-gallery/shared/sandals-alt-1.jpg',
+    '/product-gallery/shared/sandals-alt-2.jpg',
+  ],
+  tattoos: [
+    '/product-gallery/shared/tattoos-primary.jpg',
+    '/product-gallery/shared/tattoos-alt-1.jpg',
+    '/product-gallery/shared/tattoos-alt-2.jpg',
   ],
 };
+
+const franceHomeAlbumImages = [
+  '/product-gallery/france/france-home-primary.jpg',
+  '/product-gallery/france/france-home-alt-1.jpg',
+  '/product-gallery/france/france-home-alt-2.jpg',
+  '/product-gallery/france/france-home-alt-3.jpg',
+  '/product-gallery/france/france-home-alt-4.jpg',
+  '/product-gallery/france/france-home-alt-5.jpg',
+  '/product-gallery/france/france-home-alt-6.jpg',
+  '/product-gallery/france/france-home-alt-7.jpg',
+  '/product-gallery/france/france-home-alt-8.jpg',
+];
+
+const franceHoodieAlbumImages = [
+  '/product-gallery/france/france-hoodie-primary.jpg',
+  '/product-gallery/france/france-hoodie-alt-1.jpg',
+  '/product-gallery/france/france-hoodie-alt-2.jpg',
+  '/product-gallery/france/france-hoodie-alt-3.jpg',
+  '/product-gallery/france/france-hoodie-alt-4.jpg',
+  '/product-gallery/france/france-hoodie-alt-5.jpg',
+  '/product-gallery/france/france-hoodie-alt-6.jpg',
+  '/product-gallery/france/france-hoodie-alt-7.jpg',
+];
+
+const franceAwayAlbumImages = [
+  '/product-gallery/france/france-away-primary.jpg',
+  '/product-gallery/france/france-away-alt-1.jpg',
+  '/product-gallery/france/france-away-alt-2.jpg',
+  '/product-gallery/france/france-away-alt-3.jpg',
+  '/product-gallery/france/france-away-alt-4.jpg',
+  '/product-gallery/france/france-away-alt-5.jpg',
+  '/product-gallery/france/france-away-alt-6.jpg',
+  '/product-gallery/france/france-away-alt-7.jpg',
+  '/product-gallery/france/france-away-alt-8.jpg',
+];
+
+const brazilAwayAlbumImages = [
+  '/product-gallery/brazil/brazil-away-primary.jpg',
+  '/product-gallery/brazil/brazil-away-alt-1.jpg',
+  '/product-gallery/brazil/brazil-away-alt-2.jpg',
+  '/product-gallery/brazil/brazil-away-alt-3.jpg',
+  '/product-gallery/brazil/brazil-away-alt-4.jpg',
+  '/product-gallery/brazil/brazil-away-alt-5.jpg',
+  '/product-gallery/brazil/brazil-away-alt-6.jpg',
+  '/product-gallery/brazil/brazil-away-alt-7.jpg',
+  '/product-gallery/brazil/brazil-away-alt-8.jpg',
+  '/product-gallery/brazil/brazil-away-alt-9.jpg',
+];
+
+const brazilYellowHoodieAlbumImages = [
+  '/product-gallery/brazil/brazil-yellow-hoodie-primary.jpg',
+  '/product-gallery/brazil/brazil-yellow-hoodie-alt-1.jpg',
+  '/product-gallery/brazil/brazil-yellow-hoodie-alt-2.jpg',
+  '/product-gallery/brazil/brazil-yellow-hoodie-alt-3.jpg',
+  '/product-gallery/brazil/brazil-yellow-hoodie-alt-4.jpg',
+  '/product-gallery/brazil/brazil-yellow-hoodie-alt-5.jpg',
+  '/product-gallery/brazil/brazil-yellow-hoodie-alt-6.jpg',
+  '/product-gallery/brazil/brazil-yellow-hoodie-alt-7.jpg',
+];
+
+const brazilHoodieAlbumImages = [
+  '/product-gallery/brazil/brazil-hoodie-primary.jpg',
+  '/product-gallery/brazil/brazil-hoodie-alt-1.jpg',
+  '/product-gallery/brazil/brazil-hoodie-alt-2.jpg',
+  '/product-gallery/brazil/brazil-hoodie-alt-3.jpg',
+  '/product-gallery/brazil/brazil-hoodie-alt-4.jpg',
+  '/product-gallery/brazil/brazil-hoodie-alt-5.jpg',
+  '/product-gallery/brazil/brazil-hoodie-alt-6.jpg',
+];
+
+function buildJerseyGallery(teamId) {
+  if (teamId === 'france') return franceHomeAlbumImages;
+  if (teamId === 'brazil') return brazilAwayAlbumImages;
+  return [jerseyByTeam[teamId], jerseyBackByTeam[teamId]].filter(Boolean);
+}
+
+function buildSecondaryFranceGallery(teamId) {
+  if (teamId === 'france') return franceAwayAlbumImages;
+  if (teamId === 'brazil') return brazilYellowHoodieAlbumImages;
+  return buildJerseyGallery(teamId);
+}
+
+function rotateGallery(items, startIndex, count = 3) {
+  return Array.from({ length: Math.min(count, items.length) }, (_, offset) => (
+    items[(startIndex + offset) % items.length]
+  ));
+}
 
 export const products = teams.flatMap((team, teamIndex) => [
   {
     id: `${team.id}-home`,
     teamId: team.id,
     category: 'Jerseys',
-    name: `${team.name} Home Jersey 2026`,
+    name: team.id === 'brazil' ? `${team.name} Away Jersey 2026` : `${team.name} Home Jersey 2026`,
     price: 89,
     oldPrice: 110,
-    image: jerseyByTeam[team.id],
+    image: buildJerseyGallery(team.id)[0],
+    gallery: buildJerseyGallery(team.id),
     badge: teamIndex % 3 === 0 ? 'Bestseller' : 'New',
     color: team.colors[0],
   },
@@ -116,39 +212,76 @@ export const products = teams.flatMap((team, teamIndex) => [
     id: `${team.id}-away`,
     teamId: team.id,
     category: 'Jerseys',
-    name: `${team.name} Supporter Jersey 2026`,
+    name: team.id === 'france'
+      ? `${team.name} Away Jersey 2026`
+      : team.id === 'brazil'
+        ? `${team.name} Yellow Match Hoodie 2026`
+        : `${team.name} Supporter Jersey 2026`,
     price: 84,
-    image: jerseyByTeam[team.id],
+    image: buildSecondaryFranceGallery(team.id)[0],
+    gallery: buildSecondaryFranceGallery(team.id),
     color: team.colors[1],
   },
-  {
-    id: `${team.id}-slides`,
-    teamId: team.id,
-    category: 'Sandals',
-    name: `${team.name} Crest Slides`,
-    price: 39,
-    image: photos.sandals[0],
-    color: team.colors[0],
-  },
-  {
-    id: `${team.id}-tattoos`,
-    teamId: team.id,
-    category: 'Tattoos',
-    name: `${team.name} Match Day Tattoos`,
-    price: 12,
-    image: team.logo,
-    badge: teamIndex % 4 === 0 ? 'Fan pack' : null,
-    color: team.colors[0],
-  },
-  {
-    id: `${team.id}-shoes`,
-    teamId: team.id,
-    category: 'Shoes',
-    name: `${team.name} Street Trainers`,
-    price: 115,
-    oldPrice: teamIndex % 2 === 0 ? 135 : null,
-    image: photos.shoes[teamIndex % photos.shoes.length],
-    badge: teamIndex % 2 === 0 ? 'Limited' : null,
-    color: team.colors[0],
-  },
+  ...(team.id === 'france'
+    ? [{
+      id: `${team.id}-hoodie`,
+      teamId: team.id,
+      category: 'Jerseys',
+      name: `${team.name} Team Hoodie 2026`,
+      price: 94,
+      image: franceHoodieAlbumImages[0],
+      gallery: franceHoodieAlbumImages,
+      badge: 'Fan favorite',
+      color: team.colors[1],
+    }]
+    : team.id === 'brazil'
+      ? [{
+        id: `${team.id}-hoodie`,
+        teamId: team.id,
+        category: 'Jerseys',
+        name: `${team.name} Match Hoodie 2026`,
+        price: 94,
+        image: brazilHoodieAlbumImages[0],
+        gallery: brazilHoodieAlbumImages,
+      badge: 'Fan favorite',
+      color: team.colors[1],
+      }]
+    : []),
+  ...(team.id === 'france' || team.id === 'brazil'
+    ? []
+    : [
+      {
+        id: `${team.id}-slides`,
+        teamId: team.id,
+        category: 'Sandals',
+        name: `${team.name} Crest Slides`,
+        price: 39,
+        image: rotateGallery(photos.sandals, teamIndex % photos.sandals.length)[0],
+        gallery: rotateGallery(photos.sandals, teamIndex % photos.sandals.length),
+        color: team.colors[0],
+      },
+      {
+        id: `${team.id}-tattoos`,
+        teamId: team.id,
+        category: 'Tattoos',
+        name: `${team.name} Match Day Tattoos`,
+        price: 12,
+        image: rotateGallery(photos.tattoos, teamIndex % photos.tattoos.length)[0],
+        gallery: [team.logo, ...rotateGallery(photos.tattoos, teamIndex % photos.tattoos.length)],
+        badge: teamIndex % 4 === 0 ? 'Fan pack' : null,
+        color: team.colors[0],
+      },
+      {
+        id: `${team.id}-shoes`,
+        teamId: team.id,
+        category: 'Shoes',
+        name: `${team.name} Street Trainers`,
+        price: 115,
+        oldPrice: teamIndex % 2 === 0 ? 135 : null,
+        image: rotateGallery(photos.shoes, teamIndex % photos.shoes.length)[0],
+        gallery: rotateGallery(photos.shoes, teamIndex % photos.shoes.length),
+        badge: teamIndex % 2 === 0 ? 'Limited' : null,
+        color: team.colors[0],
+      },
+    ]),
 ]);

@@ -1,7 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { jerseyBackByTeam, jerseyPrintByTeam, products, teams } from './data.js';
 
 const WHATSAPP_NUMBER = String(import.meta.env.VITE_WHATSAPP_NUMBER || '').replace(/\D/g, '');
+const CURRENCY = 'DHS';
+
+function formatPrice(value) {
+  return `${value} ${CURRENCY}`;
+}
 
 const VIEW_PATHS = {
   home: '/',
@@ -18,6 +23,7 @@ function viewFromPath(pathname) {
 }
 
 function getProductImage(product) {
+  if (product.gallery?.length) return product.gallery[0];
   if (product.category !== 'Jerseys') return product.image;
   const filename = product.image.split('/').pop().replace(/\.[^.]+$/, '.png');
   return `/jerseys-transparent/${filename}`;
@@ -93,8 +99,8 @@ function ProductCard({ product, team, liked, onLike, onOpen }) {
         <button className="product-title-button" onClick={() => onOpen(product)}><h3>{product.name}</h3></button>
         <div className="product-bottom">
           <p className="price">
-            ${product.price}
-            {product.oldPrice && <span>${product.oldPrice}</span>}
+            {formatPrice(product.price)}
+            {product.oldPrice && <span>{formatPrice(product.oldPrice)}</span>}
           </p>
           <button className="quick-add" onClick={() => onOpen(product)} aria-label={`View ${product.name}`}>
             <span>View</span><Icon name="arrow" />
@@ -210,19 +216,135 @@ function ProductPage({ product, team, liked, onLike, onBack, onAdd, onCheckout }
       : ['38', '39', '40', '41', '42', '43', '44'];
   const [size, setSize] = useState(sizes[1] || sizes[0]);
   const [quantity, setQuantity] = useState(1);
+  const gallery = product.gallery?.length ? product.gallery : [getProductImage(product)];
+  const [selectedImage, setSelectedImage] = useState(gallery[0]);
+  const galleryRef = useRef(null);
+  const dragStateRef = useRef({ active: false, startX: 0, startScrollLeft: 0 });
+  const [canScrollGalleryPrev, setCanScrollGalleryPrev] = useState(false);
+  const [canScrollGalleryNext, setCanScrollGalleryNext] = useState(gallery.length > 3);
+
+  const updateGalleryNav = () => {
+    const node = galleryRef.current;
+    if (!node) return;
+    const maxScrollLeft = Math.max(0, node.scrollWidth - node.clientWidth);
+    setCanScrollGalleryPrev(node.scrollLeft > 4);
+    setCanScrollGalleryNext(node.scrollLeft < maxScrollLeft - 4);
+  };
+
+  const scrollGalleryByStep = (direction) => {
+    const node = galleryRef.current;
+    if (!node) return;
+    const step = Math.max(node.clientWidth / 3, 120);
+    node.scrollBy({ left: step * direction, behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    setSelectedImage(gallery[0]);
+    const node = galleryRef.current;
+    if (!node) return;
+    node.scrollLeft = 0;
+    updateGalleryNav();
+  }, [product.id]);
+
+  useEffect(() => {
+    updateGalleryNav();
+  }, [gallery.length]);
+
+  const handleGalleryPointerDown = (event) => {
+    const node = galleryRef.current;
+    if (!node) return;
+    dragStateRef.current = {
+      active: true,
+      startX: event.clientX,
+      startScrollLeft: node.scrollLeft,
+    };
+    node.setPointerCapture(event.pointerId);
+    node.classList.add('dragging');
+  };
+
+  const handleGalleryPointerMove = (event) => {
+    const node = galleryRef.current;
+    const dragState = dragStateRef.current;
+    if (!node || !dragState.active) return;
+    const deltaX = event.clientX - dragState.startX;
+    node.scrollLeft = dragState.startScrollLeft - deltaX;
+    updateGalleryNav();
+  };
+
+  const handleGalleryPointerUp = (event) => {
+    const node = galleryRef.current;
+    if (!node) return;
+    dragStateRef.current.active = false;
+    if (node.hasPointerCapture(event.pointerId)) {
+      node.releasePointerCapture(event.pointerId);
+    }
+    node.classList.remove('dragging');
+    updateGalleryNav();
+  };
 
   return (
     <section className="product-page">
       <button className="back-button" onClick={onBack}><Icon name="back" /> Back to shop</button>
       <div className="product-detail-grid">
-        <div className={`detail-image ${product.category === 'Jerseys' ? 'jersey-detail-image' : ''}`} style={{ '--product-color': product.color }}>
-          {product.badge && <span className="product-badge">{product.badge}</span>}
-          <img src={getProductImage(product)} alt={product.name} />
+        <div className="detail-media">
+          <div className={`detail-image ${product.category === 'Jerseys' ? 'jersey-detail-image' : ''}`} style={{ '--product-color': product.color }}>
+            {product.badge && <span className="product-badge">{product.badge}</span>}
+            <img src={selectedImage} alt={product.name} />
+          </div>
+
+          {gallery.length > 1 && (
+            <div className="detail-gallery-wrap">
+              <div className="detail-gallery-toolbar">
+                <strong>Image variants</strong>
+                {gallery.length > 3 && (
+                  <div className="detail-gallery-nav">
+                    <button
+                      type="button"
+                      onClick={() => scrollGalleryByStep(-1)}
+                      disabled={!canScrollGalleryPrev}
+                      aria-label="Previous gallery images"
+                    >
+                      <Icon name="back" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => scrollGalleryByStep(1)}
+                      disabled={!canScrollGalleryNext}
+                      aria-label="Next gallery images"
+                    >
+                      <Icon name="arrow" />
+                    </button>
+                  </div>
+                )}
+              </div>
+              <div
+                ref={galleryRef}
+                className="detail-gallery detail-gallery-carousel"
+                onScroll={updateGalleryNav}
+                onPointerDown={handleGalleryPointerDown}
+                onPointerMove={handleGalleryPointerMove}
+                onPointerUp={handleGalleryPointerUp}
+                onPointerCancel={handleGalleryPointerUp}
+              >
+                {gallery.map((image, index) => (
+                  <button
+                    key={image}
+                    type="button"
+                    className={selectedImage === image ? 'active' : ''}
+                    onClick={() => setSelectedImage(image)}
+                    aria-label={`Show product image ${index + 1}`}
+                  >
+                    <img src={image} alt="" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
         <div className="detail-copy">
           <p className="eyebrow">{team.name} / {product.category}</p>
           <h1>{product.name}</h1>
-          <p className="detail-price">${product.price} {product.oldPrice && <span>${product.oldPrice}</span>}</p>
+          <p className="detail-price">{formatPrice(product.price)} {product.oldPrice && <span>{formatPrice(product.oldPrice)}</span>}</p>
           <p className="detail-description">
             A supporter essential with a comfortable everyday fit, premium finish, and colors inspired by {team.name}.
           </p>
@@ -246,13 +368,14 @@ function ProductPage({ product, team, liked, onLike, onBack, onAdd, onCheckout }
           </div>
 
           <div className="detail-actions">
-            <button className="add-bag-button" onClick={() => onAdd(product, size, quantity)}>Add to bag — ${product.price * quantity}</button>
+            <button className="add-bag-button" onClick={() => onAdd(product, size, quantity)}>Add to bag — {formatPrice(product.price * quantity)}</button>
             <button
               className={`detail-heart ${liked ? 'liked' : ''}`}
               onClick={() => onLike(product.id)}
               aria-label="Toggle favorite"
             ><Icon name="heart" /></button>
           </div>
+
           <button className="buy-now-button" onClick={() => onCheckout(product, size, quantity)}>Buy now</button>
 
           <div className="detail-benefits">
@@ -279,14 +402,14 @@ function CheckoutPage({ cart, onBack, onUpdateQuantity, onRemove }) {
     event.preventDefault();
     if (!cart.length) return;
     const orderLines = cart.map((item, index) => (
-      `${index + 1}. ${item.product.name}\nSize: ${item.size}\nQuantity: ${item.quantity}\nPrice: $${item.product.price * item.quantity}`
+      `${index + 1}. ${item.product.name}\nSize: ${item.size}\nQuantity: ${item.quantity}\nPrice: ${formatPrice(item.product.price * item.quantity)}`
     )).join('\n\n');
     const message = [
       'Hello Kitline, I would like to place an order:',
       '',
       orderLines,
       '',
-      `Total: $${total}`,
+      `Total: ${formatPrice(total)}`,
       '',
       `Name: ${form.name}`,
       `Phone: ${form.phone}`,
@@ -318,7 +441,7 @@ function CheckoutPage({ cart, onBack, onUpdateQuantity, onRemove }) {
             <label className="full-field">Delivery address<input required name="address" value={form.address} onChange={updateForm} placeholder="Street, area, building..." /></label>
             <label className="full-field">Order note<textarea name="note" value={form.note} onChange={updateForm} placeholder="Optional: player name, jersey number, preferred color..." /></label>
           </div>
-          <button className="whatsapp-order" type="submit" disabled={!cart.length}><Icon name="whatsapp" /> Order via WhatsApp — ${total}</button>
+          <button className="whatsapp-order" type="submit" disabled={!cart.length}><Icon name="whatsapp" /> Order via WhatsApp — {formatPrice(total)}</button>
           <p className="form-note">WhatsApp will open with your complete order ready to send.</p>
         </form>
 
@@ -336,7 +459,7 @@ function CheckoutPage({ cart, onBack, onUpdateQuantity, onRemove }) {
                     <span>{item.quantity}</span>
                     <button type="button" onClick={() => onUpdateQuantity(item.key, 1)}><Icon name="plus" /></button>
                   </div>
-                  <strong>${item.product.price * item.quantity}</strong>
+                  <strong>{formatPrice(item.product.price * item.quantity)}</strong>
                 </div>
               </div>
               <button className="remove-item" onClick={() => onRemove(item.key)} aria-label={`Remove ${item.product.name}`}><Icon name="trash" /></button>
@@ -344,7 +467,7 @@ function CheckoutPage({ cart, onBack, onUpdateQuantity, onRemove }) {
           )) : (
             <div className="cart-empty"><Icon name="bag" /><h3>Your bag is empty</h3><p>Add a product before checking out.</p></div>
           )}
-          <div className="summary-total"><span>Total</span><strong>${total}</strong></div>
+          <div className="summary-total"><span>Total</span><strong>{formatPrice(total)}</strong></div>
           <p className="delivery-note">Delivery cost is confirmed on WhatsApp based on your city.</p>
         </aside>
       </div>
@@ -385,7 +508,7 @@ function CustomPrintPage({ teams, selectedTeamId, onBack }) {
       `Print number: ${displayNumber}`,
       `Size: ${size}`,
       `Quantity: ${quantity}`,
-      `Total: $${total}`,
+      `Total: ${formatPrice(total)}`,
       '',
       `Customer name: ${customer.name}`,
       `Phone: ${customer.phone}`,
@@ -492,7 +615,7 @@ function CustomPrintPage({ teams, selectedTeamId, onBack }) {
           </div>
 
           <button className="whatsapp-order custom-submit" type="submit">
-            <Icon name="whatsapp" /> Order Your Jersey — ${total}
+            <Icon name="whatsapp" /> Order Your Jersey — {formatPrice(total)}
           </button>
         </form>
       </div>
@@ -513,12 +636,6 @@ export default function App() {
   const [productReturnView, setProductReturnView] = useState('home');
 
   const selectedTeam = teams.find((team) => team.id === selectedTeamId) || teams[0];
-  const selectedTeamJersey = products.find(
-    (product) => product.teamId === selectedTeamId && product.id.endsWith('-home'),
-  );
-  const selectedHeroJersey = selectedTeamJersey
-    ? `/jerseys-transparent/${selectedTeamJersey.image.split('/').pop().replace(/\.[^.]+$/, '.png')}`
-    : '';
   const filteredProducts = useMemo(() => products.filter((product) => {
     const matchesTeam = product.teamId === selectedTeamId;
     const matchesCategory = category === 'All' || product.category === category;
@@ -695,17 +812,6 @@ export default function App() {
             <p className="hero-description">
               Jerseys, sandals, tattoos, and fan gear in one place.
             </p>
-          </div>
-          <div className="hero-art" aria-hidden="true">
-            <span className="hero-word">{selectedTeam.code}</span>
-            {selectedTeamJersey && (
-              <img
-                className="hero-jersey-image"
-                src={selectedHeroJersey}
-                alt={`${selectedTeam.name} 2026 home jersey`}
-              />
-            )}
-            <span className="hero-caption">Home collection<br />Twenty twenty-six</span>
           </div>
         </section>
 
