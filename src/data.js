@@ -131,6 +131,16 @@ export const products = teams.flatMap((team, teamIndex) => [
     color: team.colors[0],
   },
   {
+    id: `${team.id}-tattoos`,
+    teamId: team.id,
+    category: 'Tattoos',
+    name: `${team.name} Match Day Tattoos`,
+    price: 12,
+    image: team.logo,
+    badge: teamIndex % 4 === 0 ? 'Fan pack' : null,
+    color: team.colors[0],
+  },
+  {
     id: `${team.id}-shoes`,
     teamId: team.id,
     category: 'Shoes',

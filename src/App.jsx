@@ -4,15 +4,17 @@ import { jerseyBackByTeam, jerseyPrintByTeam, products, teams } from './data.js'
 const WHATSAPP_NUMBER = String(import.meta.env.VITE_WHATSAPP_NUMBER || '').replace(/\D/g, '');
 
 const VIEW_PATHS = {
-  shop: '/',
+  home: '/',
+  shop: '/shop',
   custom: '/custom-print',
   checkout: '/checkout',
 };
 
 function viewFromPath(pathname) {
+  if (pathname === VIEW_PATHS.shop) return 'shop';
   if (pathname === VIEW_PATHS.custom) return 'custom';
   if (pathname === VIEW_PATHS.checkout) return 'checkout';
-  return 'shop';
+  return 'home';
 }
 
 function getProductImage(product) {
@@ -62,7 +64,7 @@ function ProductCard({ product, team, liked, onLike, onOpen }) {
   return (
     <article className="product-card">
       <div
-        className={`product-visual product-open ${product.category === 'Jerseys' ? 'jersey-visual' : ''}`}
+        className={`product-visual product-open ${product.category === 'Jerseys' ? 'jersey-visual' : ''} ${product.category === 'Tattoos' ? 'tattoo-visual' : ''}`}
         style={{ '--product-color': product.color }}
         onClick={() => onOpen(product)}
         onKeyDown={(event) => {
@@ -84,6 +86,7 @@ function ProductCard({ product, team, liked, onLike, onOpen }) {
           <Icon name="heart" />
         </button>
         <img src={getProductImage(product)} alt={product.name} />
+        {product.category === 'Tattoos' && <TeamMark team={team} />}
       </div>
       <div className="product-info">
         <p className="product-category">{team.code} / {product.category}</p>
@@ -102,9 +105,110 @@ function ProductCard({ product, team, liked, onLike, onOpen }) {
   );
 }
 
+function HomePage({ products, teams, likedProducts, onLike, onOpen }) {
+  const heroTeamIds = ['morocco', 'brazil', 'france', 'argentina'];
+  const featuredJerseys = heroTeamIds
+    .map((teamId) => products.find((product) => product.teamId === teamId && product.id.endsWith('-home')))
+    .filter(Boolean);
+  const featuredSandals = products.filter((product) => product.category === 'Sandals').slice(0, 4);
+  const featuredTattoos = products.filter((product) => product.category === 'Tattoos').slice(0, 4);
+  const heroSlides = [
+    {
+      id: 'world-cup-ball',
+      image: 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=1600&q=85',
+      alt: 'Football resting on the pitch before a major international match',
+    },
+    {
+      id: 'national-jersey',
+      image: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1600&q=85',
+      alt: 'National team football jerseys hanging together before kickoff',
+    },
+    {
+      id: 'training-pitch',
+      image: 'https://images.unsplash.com/photo-1508098682722-e99c643e7485?auto=format&fit=crop&w=1600&q=85',
+      alt: 'Player walking onto a football field in match gear before play',
+    },
+  ];
+  const [activeSlide, setActiveSlide] = useState(0);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setActiveSlide((current) => (current + 1) % heroSlides.length);
+    }, 4500);
+    return () => window.clearInterval(timer);
+  }, [heroSlides.length]);
+
+  const renderProductSection = (title, items, id) => (
+    <section className="catalog-section home-catalog" id={id}>
+      <div className="section-heading">
+        <div>
+          <h2>{title}</h2>
+        </div>
+      </div>
+
+      <div className="product-grid">
+        {items.map((product) => {
+          const team = teams.find((item) => item.id === product.teamId) || teams[0];
+          return (
+            <ProductCard
+              key={product.id}
+              product={product}
+              team={team}
+              liked={likedProducts.includes(product.id)}
+              onLike={onLike}
+              onOpen={(item) => onOpen(item, 'home')}
+            />
+          );
+        })}
+      </div>
+    </section>
+  );
+
+  return (
+    <>
+      <section className="home-hero">
+        <div className="home-hero-media">
+          <div className="home-hero-slides">
+            {heroSlides.map((slide, index) => (
+              <figure
+                key={slide.id}
+                className={`home-hero-slide ${index === activeSlide ? 'active' : ''}`}
+                aria-hidden={index !== activeSlide}
+              >
+                <img src={slide.image} alt={slide.alt} />
+              </figure>
+            ))}
+          </div>
+          <div className="home-hero-overlay" aria-hidden="true" />
+          <div className="home-hero-dots" aria-label="Hero images">
+            {heroSlides.map((slide, index) => (
+              <button
+                key={slide.id}
+                type="button"
+                className={index === activeSlide ? 'active' : ''}
+                onClick={() => setActiveSlide(index)}
+                aria-label={`Show hero image ${index + 1}`}
+                aria-pressed={index === activeSlide}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {renderProductSection('Featured jerseys.', featuredJerseys, 'featured')}
+      {renderProductSection('Sandals.', featuredSandals, 'sandals')}
+      {renderProductSection('Tattoos.', featuredTattoos, 'tattoos')}
+    </>
+  );
+}
+
 function ProductPage({ product, team, liked, onLike, onBack, onAdd, onCheckout }) {
-  const sizes = product.category === 'Jerseys' ? ['S', 'M', 'L', 'XL', '2XL'] : ['38', '39', '40', '41', '42', '43', '44'];
-  const [size, setSize] = useState(sizes[1]);
+  const sizes = product.category === 'Jerseys'
+    ? ['S', 'M', 'L', 'XL', '2XL']
+    : product.category === 'Tattoos'
+      ? ['One size']
+      : ['38', '39', '40', '41', '42', '43', '44'];
+  const [size, setSize] = useState(sizes[1] || sizes[0]);
   const [quantity, setQuantity] = useState(1);
 
   return (
@@ -406,6 +510,7 @@ export default function App() {
   const [notice, setNotice] = useState('');
   const [view, setView] = useState(() => viewFromPath(window.location.pathname));
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [productReturnView, setProductReturnView] = useState('home');
 
   const selectedTeam = teams.find((team) => team.id === selectedTeamId) || teams[0];
   const selectedTeamJersey = products.find(
@@ -455,9 +560,16 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const openProduct = (product) => {
+  const openProduct = (product, returnView = view) => {
     setSelectedProduct(product);
+    setProductReturnView(returnView);
     setView('product');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const showHome = () => {
+    navigateView('home');
+    setSelectedProduct(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -478,7 +590,7 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const addToCart = (product, size = product.category === 'Jerseys' ? 'M' : '39', quantity = 1) => {
+  const addToCart = (product, size = product.category === 'Jerseys' ? 'M' : product.category === 'Tattoos' ? 'One size' : '39', quantity = 1) => {
     const key = `${product.id}-${size}`;
     setCart((current) => {
       const existing = current.find((item) => item.key === key);
@@ -511,16 +623,16 @@ export default function App() {
   return (
     <div className="app-shell">
       <header className="site-header">
-        <button className="brand brand-button" onClick={showShop} aria-label="Kitline home">
+        <button className="brand brand-button" onClick={showHome} aria-label="Kitline home">
           <span className="brand-ball">K</span>
           <span>KITLINE</span>
         </button>
 
         <nav className={menuOpen ? 'main-nav open' : 'main-nav'} aria-label="Main navigation">
-          <a href="/" onClick={(event) => { event.preventDefault(); showShop(); setMenuOpen(false); }}>Shop</a>
+          <a href="/" onClick={(event) => { event.preventDefault(); showHome(); setMenuOpen(false); }}>Home</a>
+          <a href="/shop" onClick={(event) => { event.preventDefault(); showShop(); setMenuOpen(false); }}>Shop</a>
           <a href="/custom-print" onClick={(event) => { event.preventDefault(); showCustom(); setMenuOpen(false); }}>Your Jersey</a>
-          <a href="/" onClick={(event) => { event.preventDefault(); showShop(); setMenuOpen(false); }}>National teams</a>
-          <a href="/#story" onClick={(event) => { event.preventDefault(); showShop(); setMenuOpen(false); }}>Our story</a>
+          <a href="/#teams" onClick={(event) => { event.preventDefault(); showHome(); setMenuOpen(false); }}>National teams</a>
         </nav>
 
         <div className="header-actions">
@@ -564,21 +676,25 @@ export default function App() {
       </aside>
 
       <main>
+        {view === 'home' && (
+          <HomePage
+            products={products}
+            teams={teams}
+            likedProducts={favorites}
+            onLike={toggleFavorite}
+            onOpen={openProduct}
+          />
+        )}
+
         {view === 'shop' && (
           <>
-        <section className="hero" style={{ '--hero-color': selectedTeam.colors[0], '--hero-accent': selectedTeam.colors[1] }}>
+        <section className="hero shop-hero" style={{ '--hero-color': selectedTeam.colors[0], '--hero-accent': selectedTeam.colors[1] }}>
           <div className="hero-copy">
-            <p className="eyebrow">Wear your colors</p>
-            <h1>{selectedTeam.name}<br /><em>everywhere.</em></h1>
+            <p className="eyebrow">Team shop</p>
+            <h1>{selectedTeam.name}<br /><em>collection.</em></h1>
             <p className="hero-description">
-              Official-inspired kits and street essentials made for match day, city days, and every day in between.
+              Jerseys, sandals, tattoos, and fan gear in one place.
             </p>
-            <a href="#shop" className="primary-button">Shop {selectedTeam.name} <Icon name="arrow" /></a>
-            <div className="hero-stats">
-              <span><strong>04</strong> fresh styles</span>
-              <span><strong>48h</strong> fast dispatch</span>
-              <span><strong>30d</strong> easy returns</span>
-            </div>
           </div>
           <div className="hero-art" aria-hidden="true">
             <span className="hero-word">{selectedTeam.code}</span>
@@ -593,17 +709,16 @@ export default function App() {
           </div>
         </section>
 
-        <section className="catalog-section" id="shop">
+        <section className="catalog-section shop-catalog" id="shop">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">The {selectedTeam.code} edit</p>
-              <h2>Built for the supporters.</h2>
+              <h2>{selectedTeam.name} products.</h2>
             </div>
             <p>{filteredProducts.length} products</p>
           </div>
 
           <div className="filter-row">
-            {['All', 'Jerseys', 'Sandals', 'Shoes'].map((item) => (
+            {['All', 'Jerseys', 'Sandals', 'Tattoos', 'Shoes'].map((item) => (
               <button key={item} className={category === item ? 'active' : ''} onClick={() => setCategory(item)}>
                 {item}
               </button>
@@ -619,7 +734,7 @@ export default function App() {
                   team={selectedTeam}
                   liked={favorites.includes(product.id)}
                   onLike={toggleFavorite}
-                  onOpen={openProduct}
+                  onOpen={(item) => openProduct(item, 'shop')}
                 />
               ))}
             </div>
@@ -649,7 +764,7 @@ export default function App() {
             team={teams.find((team) => team.id === selectedProduct.teamId) || selectedTeam}
             liked={favorites.includes(selectedProduct.id)}
             onLike={toggleFavorite}
-            onBack={showShop}
+            onBack={productReturnView === 'home' ? showHome : showShop}
             onAdd={addToCart}
             onCheckout={buyNow}
           />

@@ -123,9 +123,138 @@ main { padding-top: var(--header-height); }
 .hero-description { max-width: 490px; margin: 30px 0; color: #5e5e58; font-size: 17px; line-height: 1.65; }
 .primary-button { height: 54px; padding: 0 22px; display: inline-flex; align-items: center; gap: 35px; background: var(--ink); color: #fff; border-radius: 4px; font-size: 14px; font-weight: 700; transition: .2s; }
 .primary-button:hover { background: var(--blue); transform: translateY(-2px); }
+.secondary-button { height: 54px; padding: 0 20px; border: 1px solid var(--ink); background: transparent; color: var(--ink); font-size: 14px; font-weight: 800; cursor: pointer; transition: .2s; }
+.secondary-button:hover { background: #fff; transform: translateY(-2px); }
 .hero-stats { width: 100%; max-width: 500px; margin-top: 58px; padding-top: 23px; display: flex; gap: 32px; border-top: 1px solid #d1cec5; color: #77766e; font-size: 12px; }
 .hero-stats span { display: flex; flex-direction: column; gap: 3px; }
 .hero-stats strong { color: var(--ink); font: 700 21px/1 'Manrope', sans-serif; }
+.shop-hero {
+  min-height: 430px;
+  grid-template-columns: minmax(0, .92fr) minmax(320px, .72fr);
+  align-items: stretch;
+  margin: 0 clamp(18px, 3vw, 34px);
+  border: 1px solid var(--line);
+  border-top: 0;
+}
+.shop-hero .hero-copy {
+  padding: clamp(30px, 4vw, 54px) clamp(24px, 4vw, 48px);
+}
+.shop-hero .eyebrow {
+  margin-bottom: 12px;
+}
+.shop-hero h1 {
+  max-width: 460px;
+  font-size: clamp(38px, 4.2vw, 64px);
+}
+.shop-hero .hero-description {
+  max-width: 420px;
+  margin: 16px 0 22px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.shop-hero .hero-art {
+  min-height: 428px;
+}
+.shop-hero .hero-word {
+  inset: 9% auto auto 8%;
+  font-size: clamp(90px, 11vw, 170px);
+}
+.shop-hero .hero-jersey-image {
+  width: min(74%, 420px);
+  height: min(78%, 390px);
+}
+.shop-hero .hero-caption {
+  right: 24px;
+  bottom: 22px;
+}
+
+.home-hero {
+  min-height: calc(100vh - var(--header-height));
+  display: block;
+  padding: clamp(34px, 5vw, 70px) clamp(28px, 5vw, 76px);
+  overflow: hidden;
+  background: #f2f0e9;
+  border-bottom: 1px solid var(--line);
+}
+.home-hero-media {
+  position: relative;
+  min-height: clamp(520px, 66vh, 720px);
+  overflow: hidden;
+  isolation: isolate;
+  background: #181b22;
+  border-radius: 24px;
+}
+.home-hero-media::before {
+  content: '';
+  position: absolute;
+  inset: 9%;
+  border: 1px solid rgba(255,255,255,.28);
+  z-index: 3;
+}
+.home-hero-media::after {
+  content: 'MATCH DAY';
+  position: absolute;
+  left: 5%;
+  bottom: 2%;
+  color: rgba(255,255,255,.13);
+  font: 900 clamp(68px, 11vw, 160px)/.9 'Manrope', sans-serif;
+  letter-spacing: -.08em;
+  z-index: 3;
+}
+.home-hero-slides,
+.home-hero-slide {
+  position: absolute;
+  inset: 0;
+}
+.home-hero-slide {
+  margin: 0;
+  opacity: 0;
+  transition: opacity .7s ease;
+}
+.home-hero-slide.active { opacity: 1; }
+.home-hero-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.home-hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    linear-gradient(180deg, rgba(10, 14, 26, .12), rgba(10, 14, 26, .42)),
+    linear-gradient(135deg, rgba(26, 72, 191, .2), rgba(10, 124, 82, .18));
+}
+.home-hero-dots {
+  position: relative;
+  z-index: 3;
+  min-height: inherit;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 0 28px;
+}
+.home-hero-dots button {
+  width: 11px;
+  height: 11px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255,255,255,.42);
+  cursor: pointer;
+  transition: transform .2s ease, background-color .2s ease, width .2s ease;
+}
+.home-hero-dots button.active {
+  width: 34px;
+  background: #fff;
+}
+.home-hero-dots button:hover {
+  background: rgba(255,255,255,.72);
+  transform: translateY(-1px);
+}
+.home-catalog { padding-top: 72px; padding-bottom: 72px; border-top: 1px solid var(--line); }
+.home-catalog + .home-catalog { padding-top: 0; }
 
 .hero-art { position: relative; min-width: 0; overflow: hidden; display: grid; place-items: center; background: var(--hero-color); isolation: isolate; }
 .hero-art::before { content: ''; position: absolute; width: 560px; height: 560px; border: 1px solid rgba(255,255,255,.25); border-radius: 50%; box-shadow: 0 0 0 80px rgba(255,255,255,.05), 0 0 0 160px rgba(255,255,255,.04); }
@@ -145,9 +274,12 @@ main { padding-top: var(--header-height); }
 .hero-caption { position: absolute; right: 36px; bottom: 28px; color: rgba(255,255,255,.75); font-size: 11px; line-height: 1.5; letter-spacing: .12em; text-align: right; text-transform: uppercase; }
 
 .catalog-section { padding: 90px clamp(30px, 5vw, 76px) 110px; background: var(--cream); }
-.section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 30px; margin-bottom: 35px; }
+.shop-catalog { padding-top: 34px; }
+.section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 30px; margin-bottom: 15px; }
 .section-heading .eyebrow { margin-bottom: 13px; }
 .section-heading h2, .story-section h2 { margin: 0; font: 700 clamp(38px, 4vw, 62px)/1.05 'Manrope', sans-serif; letter-spacing: -.055em; }
+.home-catalog .section-heading h2 { font: 700 clamp(28px, 3vw, 42px)/1.08 'Manrope', sans-serif; letter-spacing: -.045em; }
+.shop-catalog .section-heading h2 { font: 700 clamp(28px, 3vw, 42px)/1.08 'Manrope', sans-serif; letter-spacing: -.045em; }
 .section-heading > p { margin: 0 0 6px; color: #77766f; font-size: 13px; }
 .filter-row { display: flex; gap: 9px; margin-bottom: 32px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
 .filter-row button { padding: 9px 17px; border: 1px solid var(--line); border-radius: 99px; background: transparent; font-size: 13px; cursor: pointer; }
@@ -162,6 +294,33 @@ main { padding-top: var(--header-height); }
 .product-visual.jersey-visual { background: #f1f0eb; }
 .product-visual.jersey-visual img { position: relative; z-index: 1; padding: 9%; object-fit: contain; mix-blend-mode: normal; }
 .product-visual.jersey-visual::after { opacity: .07; }
+.product-visual.tattoo-visual {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #f6f4ed, #e6e2d7);
+}
+.product-visual.tattoo-visual::before {
+  content: '';
+  position: absolute;
+  inset: 12%;
+  border: 1px dashed rgba(23,24,22,.2);
+  border-radius: 50%;
+}
+.product-visual.tattoo-visual img {
+  position: absolute;
+  width: 54%;
+  height: 54%;
+  object-fit: contain;
+  mix-blend-mode: normal;
+  opacity: .1;
+}
+.product-visual.tattoo-visual .team-mark {
+  z-index: 2;
+  width: 112px;
+  height: 112px;
+  border-radius: 28px;
+  box-shadow: 0 18px 40px rgba(20,20,20,.14);
+}
 .product-card:hover .product-visual img { transform: scale(1.045); }
 .product-badge { position: absolute; left: 13px; top: 13px; z-index: 3; padding: 6px 9px; background: var(--coral); color: #fff; font-size: 9px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
 .heart-button { position: absolute; z-index: 3; top: 10px; right: 10px; width: 36px; height: 36px; display: grid; place-items: center; border: 0; border-radius: 50%; background: rgba(255,255,255,.88); cursor: pointer; }
@@ -173,7 +332,7 @@ main { padding-top: var(--header-height); }
 .product-category { margin: 0 0 7px; color: #898880; font-size: 10px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
 .product-info h3 { min-height: 45px; margin: 0; font: 650 16px/1.35 'Manrope', sans-serif; letter-spacing: -.025em; }
 .product-title-button { width: 100%; padding: 0; border: 0; background: transparent; text-align: left; cursor: pointer; }
-.product-bottom { margin-top: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.product-bottom { margin-top: 8px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .price { margin: 0; font-weight: 700; }
 .price span { margin-left: 7px; color: #9d9b94; font-size: 12px; font-weight: 400; text-decoration: line-through; }
 .quick-add { height: 36px; padding: 0 11px 0 14px; display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--ink); background: transparent; font-size: 11px; font-weight: 700; cursor: pointer; }
@@ -318,6 +477,14 @@ footer p { margin: 0; color: #a7a7a2; }
   .main-nav a { padding: 14px; }
   .menu-button { display: grid; }
   .search-box { width: 180px; }
+  .shop-hero {
+    min-height: 0;
+    margin: 0 18px;
+    grid-template-columns: 1fr;
+  }
+  .shop-hero .hero-art { min-height: 320px; }
+  .shop-catalog { padding-top: 24px; }
+  .home-hero-media { min-height: 560px; }
   .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 20px; }
   .product-detail-grid { grid-template-columns: minmax(0, 1fr) minmax(330px, .9fr); gap: 42px; }
   .detail-image, .detail-image img { min-height: 560px; }
@@ -367,6 +534,11 @@ footer p { margin: 0; color: #a7a7a2; }
       height: calc(100% - 6px);
   }
   .team-tooltip { display: none; }
+  .home-hero { min-height: 0; padding: 18px 18px 10px; gap: 32px; }
+  .home-hero-media { min-height: 440px; }
+  .home-hero-media { border-radius: 18px; }
+  .home-hero-dots { padding-bottom: 20px; }
+  .home-catalog { padding-top: 58px; padding-bottom: 58px; }
   .hero { min-height: 0; grid-template-columns: 1fr; }
   .hero-copy { padding: 62px 22px 48px; }
   .hero h1 { font-size: clamp(52px, 16vw, 78px); }
@@ -374,11 +546,39 @@ footer p { margin: 0; color: #a7a7a2; }
   .hero-stats { margin-top: 42px; gap: 18px; }
   .hero-art { min-height: 490px; }
   .hero-jersey-image { width: 88%; height: 84%; }
+  .shop-hero {
+    margin: 0 10px;
+  }
+  .shop-hero .hero-copy {
+    padding: 28px 18px 22px;
+  }
+  .shop-hero h1 {
+    font-size: clamp(34px, 11vw, 52px);
+  }
+  .shop-hero .hero-description {
+    margin: 14px 0 18px;
+    font-size: 14px;
+  }
+  .shop-hero .hero-art {
+    min-height: 250px;
+  }
+  .shop-hero .hero-word {
+    font-size: clamp(72px, 24vw, 130px);
+  }
+  .shop-hero .hero-jersey-image {
+    width: 72%;
+    height: 78%;
+  }
+  .shop-catalog {
+    padding-top: 16px;
+  }
   .hero-shirt { width: 270px; height: 350px; }
   .shirt-body strong { font-size: 85px; }
-  .catalog-section { padding: 65px 18px 80px; }
+  .catalog-section { padding: 10px 18px 30px; }
   .section-heading { align-items: flex-start; }
   .section-heading h2 { font-size: 42px; }
+  .home-catalog .section-heading h2 { font-size: 32px; }
+  .shop-catalog .section-heading h2 { font-size: 32px; }
   .filter-row { overflow-x: auto; }
   .filter-row button { flex: 0 0 auto; }
   .product-grid { gap: 30px 10px; }
@@ -416,6 +616,12 @@ footer p { margin: 0; color: #a7a7a2; }
   .header-icon, .menu-button { width: 37px; }
   .hero-stats { justify-content: space-between; width: 100%; gap: 8px; }
   .hero-stats strong { font-size: 18px; }
+  .home-hero { padding-left: 12px; padding-right: 12px; }
+  .home-hero-media { min-height: 360px; }
+  .home-main-jersey { height: 330px; }
+  .home-sandal { width: 38%; }
+  .home-tattoo { width: 92px; height: 92px; }
+  .home-team-row { gap: 6px; }
   .product-visual { aspect-ratio: .76; }
   .product-category { font-size: 8px; }
   .price { font-size: 14px; }
