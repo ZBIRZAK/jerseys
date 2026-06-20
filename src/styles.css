@@ -253,6 +253,78 @@ main { padding-top: var(--header-height); }
 .shirt-body strong { position: relative; z-index: 2; color: var(--hero-color); font: 800 105px/1 'Manrope', sans-serif; letter-spacing: -.08em; }
 .catalog-section { padding: 90px clamp(30px, 5vw, 76px) 110px; background: var(--cream); }
 .shop-catalog { padding-top: 34px; }
+.shop-catalog .product-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(18px, 2.6vw, 30px);
+}
+.shop-catalog .product-card {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+.shop-catalog .product-visual {
+  aspect-ratio: .72;
+  background: #ece9df;
+}
+.shop-catalog .product-visual::after {
+  display: none;
+}
+.shop-catalog .product-visual img {
+  object-fit: cover;
+  object-position: center top;
+  mix-blend-mode: normal;
+}
+.shop-catalog .product-visual.jersey-visual {
+  background: #ece9df;
+}
+.shop-catalog .product-visual.jersey-visual img {
+  padding: 0;
+  object-fit: cover;
+  object-position: center top;
+}
+.shop-catalog .product-badge {
+  left: 0;
+  top: 0;
+  padding: 12px 16px;
+  font-size: 11px;
+  letter-spacing: .12em;
+}
+.shop-catalog .heart-button {
+  top: 14px;
+  right: 14px;
+  width: 50px;
+  height: 50px;
+  background: rgba(255,255,255,.94);
+}
+.shop-catalog .heart-button svg {
+  width: 22px;
+  height: 22px;
+}
+.shop-catalog .product-info {
+  padding: 0;
+}
+.shop-catalog .product-category,
+.shop-catalog .quick-add {
+  display: none;
+}
+.shop-catalog .product-info h3 {
+  min-height: 0;
+  font-size: clamp(22px, 2vw, 32px);
+  line-height: 1.08;
+  letter-spacing: -.05em;
+}
+.shop-catalog .product-bottom {
+  margin-top: 8px;
+  justify-content: flex-start;
+}
+.shop-catalog .price {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+}
+.shop-catalog .price span {
+  font-size: 14px;
+}
 .section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 30px; margin-bottom: 15px; }
 .section-heading .eyebrow { margin-bottom: 13px; }
 .section-heading h2, .story-section h2 { margin: 0; font: 700 clamp(38px, 4vw, 62px)/1.05 'Manrope', sans-serif; letter-spacing: -.055em; }
@@ -325,13 +397,13 @@ main { padding-top: var(--header-height); }
 .back-button { padding: 0; display: inline-flex; align-items: center; gap: 9px; border: 0; background: transparent; color: #65645e; font-size: 13px; font-weight: 700; cursor: pointer; }
 .back-button:hover { color: var(--blue); }
 .back-button svg { width: 17px; }
-.product-detail-grid { max-width: 1300px; margin: 38px auto 0; display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(350px, .92fr); gap: clamp(42px, 7vw, 105px); align-items: start; }
+.product-detail-grid { max-width: 1420px; margin: 38px auto 0; display: grid; grid-template-columns: minmax(0, 1.28fr) minmax(350px, .82fr); gap: clamp(34px, 5vw, 82px); align-items: start; }
 .detail-media { display: grid; gap: 16px; align-content: start; }
-.detail-image { position: relative; min-height: 650px; overflow: hidden; background: #e8e6de; }
+.detail-image { position: relative; min-height: 820px; overflow: hidden; background: #e8e6de; }
 .detail-image::after { content: ''; position: absolute; right: -15%; bottom: -20%; width: 70%; height: 60%; border-radius: 50%; background: var(--product-color); opacity: .13; }
-.detail-image img { width: 100%; height: 100%; min-height: 650px; position: absolute; inset: 0; object-fit: cover; mix-blend-mode: multiply; }
+.detail-image img { width: 100%; height: 100%; min-height: 820px; position: absolute; inset: 0; object-fit: cover; object-position: center top; mix-blend-mode: multiply; }
 .jersey-detail-image { background: #f1f0eb; }
-.jersey-detail-image img { padding: clamp(10px, 2vw, 40px); object-fit: contain; mix-blend-mode: normal; }
+.jersey-detail-image img { padding: 0; object-fit: cover; object-position: center top; mix-blend-mode: normal; }
 .detail-copy { padding-top: 28px; }
 .detail-copy .eyebrow { margin-bottom: 17px; }
 .detail-copy h1 { max-width: 620px; margin: 0; font: 700 clamp(42px, 4.5vw, 70px)/1.02 'Manrope', sans-serif; letter-spacing: -.06em; }
@@ -542,8 +614,8 @@ footer p { margin: 0; color: #a7a7a2; }
   .shop-catalog { padding-top: 24px; }
   .home-hero-media { min-height: 560px; }
   .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 20px; }
-  .product-detail-grid { grid-template-columns: minmax(0, 1fr) minmax(330px, .9fr); gap: 42px; }
-  .detail-image, .detail-image img { min-height: 560px; }
+  .product-detail-grid { grid-template-columns: minmax(0, 1.08fr) minmax(330px, .92fr); gap: 34px; }
+  .detail-image, .detail-image img { min-height: 700px; }
   .checkout-grid { grid-template-columns: 1fr; }
   .order-summary { max-width: none; }
   .custom-grid { grid-template-columns: 1fr; }
@@ -616,6 +688,37 @@ footer p { margin: 0; color: #a7a7a2; }
   .shop-catalog {
     padding-top: 16px;
   }
+  .shop-catalog .product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 14px;
+  }
+  .shop-catalog .product-visual {
+    aspect-ratio: .78;
+  }
+  .shop-catalog .heart-button {
+    top: 10px;
+    right: 10px;
+    width: 44px;
+    height: 44px;
+  }
+  .shop-catalog .heart-button svg {
+    width: 20px;
+    height: 20px;
+  }
+  .shop-catalog .product-badge {
+    padding: 10px 13px;
+    font-size: 10px;
+  }
+  .shop-catalog .product-info h3 {
+    font-size: 18px;
+    line-height: 1.12;
+  }
+  .shop-catalog .price {
+    font-size: 16px;
+  }
+  .shop-catalog .price span {
+    font-size: 13px;
+  }
   .hero-shirt { width: 270px; height: 350px; }
   .shirt-body strong { font-size: 85px; }
   .catalog-section { padding: 10px 18px 30px; }
@@ -633,7 +736,7 @@ footer p { margin: 0; color: #a7a7a2; }
   .story-section h2 { font-size: 39px; }
   .product-page, .checkout-page { padding: 15px 16px 75px; }
   .product-detail-grid { margin-top: 26px; grid-template-columns: 1fr; gap: 28px; }
-  .detail-image, .detail-image img { min-height: 440px; }
+  .detail-image, .detail-image img { min-height: 560px; }
   .detail-copy { padding-top: 4px; }
   .detail-copy h1 { font-size: 43px; }
   .detail-benefits span { align-items: flex-start; flex-direction: column; gap: 4px; }
