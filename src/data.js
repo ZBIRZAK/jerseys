@@ -109,9 +109,9 @@ const photos = {
 };
 
 const franceHomeAlbumImages = [
+  '/product-gallery/france/france-home-alt-2.jpg',
   '/product-gallery/france/france-home-primary.jpg',
   '/product-gallery/france/france-home-alt-1.jpg',
-  '/product-gallery/france/france-home-alt-2.jpg',
   '/product-gallery/france/france-home-alt-3.jpg',
   '/product-gallery/france/france-home-alt-4.jpg',
   '/product-gallery/france/france-home-alt-5.jpg',
@@ -132,9 +132,9 @@ const franceHoodieAlbumImages = [
 ];
 
 const franceAwayAlbumImages = [
+  '/product-gallery/france/france-away-alt-2.jpg',
   '/product-gallery/france/france-away-primary.jpg',
   '/product-gallery/france/france-away-alt-1.jpg',
-  '/product-gallery/france/france-away-alt-2.jpg',
   '/product-gallery/france/france-away-alt-3.jpg',
   '/product-gallery/france/france-away-alt-4.jpg',
   '/product-gallery/france/france-away-alt-5.jpg',
@@ -144,9 +144,9 @@ const franceAwayAlbumImages = [
 ];
 
 const brazilAwayAlbumImages = [
+  '/product-gallery/brazil/brazil-away-alt-2.jpg',
   '/product-gallery/brazil/brazil-away-primary.jpg',
   '/product-gallery/brazil/brazil-away-alt-1.jpg',
-  '/product-gallery/brazil/brazil-away-alt-2.jpg',
   '/product-gallery/brazil/brazil-away-alt-3.jpg',
   '/product-gallery/brazil/brazil-away-alt-4.jpg',
   '/product-gallery/brazil/brazil-away-alt-5.jpg',
@@ -157,9 +157,9 @@ const brazilAwayAlbumImages = [
 ];
 
 const brazilYellowHoodieAlbumImages = [
+  '/product-gallery/brazil/brazil-yellow-hoodie-alt-2.jpg',
   '/product-gallery/brazil/brazil-yellow-hoodie-primary.jpg',
   '/product-gallery/brazil/brazil-yellow-hoodie-alt-1.jpg',
-  '/product-gallery/brazil/brazil-yellow-hoodie-alt-2.jpg',
   '/product-gallery/brazil/brazil-yellow-hoodie-alt-3.jpg',
   '/product-gallery/brazil/brazil-yellow-hoodie-alt-4.jpg',
   '/product-gallery/brazil/brazil-yellow-hoodie-alt-5.jpg',
@@ -168,9 +168,9 @@ const brazilYellowHoodieAlbumImages = [
 ];
 
 const brazilHoodieAlbumImages = [
+  '/product-gallery/brazil/brazil-hoodie-alt-2.jpg',
   '/product-gallery/brazil/brazil-hoodie-primary.jpg',
   '/product-gallery/brazil/brazil-hoodie-alt-1.jpg',
-  '/product-gallery/brazil/brazil-hoodie-alt-2.jpg',
   '/product-gallery/brazil/brazil-hoodie-alt-3.jpg',
   '/product-gallery/brazil/brazil-hoodie-alt-4.jpg',
   '/product-gallery/brazil/brazil-hoodie-alt-5.jpg',
