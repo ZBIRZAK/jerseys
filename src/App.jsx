@@ -120,19 +120,19 @@ function HomePage({ products, teams, likedProducts, onLike, onOpen }) {
   const featuredTattoos = products.filter((product) => product.category === 'Tattoos').slice(0, 4);
   const heroSlides = [
     {
-      id: 'world-cup-ball',
-      image: 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=1600&q=85',
-      alt: 'Football resting on the pitch before a major international match',
+      id: 'france-home-hero',
+      image: '/product-gallery/france/france-home-alt-2.jpg',
+      alt: 'France jersey hero image',
     },
     {
-      id: 'national-jersey',
-      image: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1600&q=85',
-      alt: 'National team football jerseys hanging together before kickoff',
+      id: 'france-away-hero',
+      image: '/product-gallery/france/france-away-alt-2.jpg',
+      alt: 'France away jersey hero image',
     },
     {
-      id: 'training-pitch',
-      image: 'https://images.unsplash.com/photo-1508098682722-e99c643e7485?auto=format&fit=crop&w=1600&q=85',
-      alt: 'Player walking onto a football field in match gear before play',
+      id: 'brazil-away-hero',
+      image: '/product-gallery/brazil/brazil-away-alt-2.jpg',
+      alt: 'Brazil jersey hero image',
     },
   ];
   const [activeSlide, setActiveSlide] = useState(0);
