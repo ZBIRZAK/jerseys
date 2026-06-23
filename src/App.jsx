@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { jerseyBackByTeam, jerseyPrintByTeam, products, teams } from './data.js';
+import DashboardPage from './Dashboard.jsx';
+import { categories as seedCategories, heroSlides as seedHeroSlides, jerseyBackByTeam, jerseyPrintByTeam, products as seedProducts, teams as seedTeams } from './data.js';
+import { createOrder, fetchStoreContent, isSupabaseConfigured } from './supabaseApi.js';
 
 const WHATSAPP_NUMBER = String(import.meta.env.VITE_WHATSAPP_NUMBER || '').replace(/\D/g, '');
 const CURRENCY = 'DHS';
@@ -13,12 +15,14 @@ const VIEW_PATHS = {
   shop: '/shop',
   custom: '/custom-print',
   checkout: '/checkout',
+  dashboard: '/dashboard',
 };
 
 function viewFromPath(pathname) {
   if (pathname === VIEW_PATHS.shop) return 'shop';
   if (pathname === VIEW_PATHS.custom) return 'custom';
   if (pathname === VIEW_PATHS.checkout) return 'checkout';
+  if (pathname === VIEW_PATHS.dashboard) return 'dashboard';
   return 'home';
 }
 
@@ -111,30 +115,13 @@ function ProductCard({ product, team, liked, onLike, onOpen }) {
   );
 }
 
-function HomePage({ products, teams, likedProducts, onLike, onOpen }) {
+function HomePage({ products, teams, heroSlides, likedProducts, onLike, onOpen }) {
   const heroTeamIds = ['morocco', 'brazil', 'france', 'argentina'];
   const featuredJerseys = heroTeamIds
-    .map((teamId) => products.find((product) => product.teamId === teamId && product.id.endsWith('-home')))
+    .map((teamId) => products.find((product) => product.teamId === teamId && product.category === 'Jerseys'))
     .filter(Boolean);
   const featuredSandals = products.filter((product) => product.category === 'Sandals').slice(0, 4);
   const featuredTattoos = products.filter((product) => product.category === 'Tattoos').slice(0, 4);
-  const heroSlides = [
-    {
-      id: 'france-home-hero',
-      image: '/product-gallery/france/france-home-alt-2.jpg',
-      alt: 'France jersey hero image',
-    },
-    {
-      id: 'france-away-hero',
-      image: '/product-gallery/france/france-away-alt-2.jpg',
-      alt: 'France away jersey hero image',
-    },
-    {
-      id: 'brazil-away-hero',
-      image: '/product-gallery/brazil/brazil-away-alt-2.jpg',
-      alt: 'Brazil jersey hero image',
-    },
-  ];
   const [activeSlide, setActiveSlide] = useState(0);
 
   useEffect(() => {
@@ -201,9 +188,9 @@ function HomePage({ products, teams, likedProducts, onLike, onOpen }) {
         </div>
       </section>
 
-      {renderProductSection('Featured jerseys.', featuredJerseys, 'featured')}
-      {renderProductSection('Sandals.', featuredSandals, 'sandals')}
-      {renderProductSection('Tattoos.', featuredTattoos, 'tattoos')}
+      {featuredJerseys.length > 0 && renderProductSection('Featured jerseys.', featuredJerseys, 'featured')}
+      {featuredSandals.length > 0 && renderProductSection('Sandals.', featuredSandals, 'sandals')}
+      {featuredTattoos.length > 0 && renderProductSection('Tattoos.', featuredTattoos, 'tattoos')}
     </>
   );
 }
@@ -398,7 +385,7 @@ function CheckoutPage({ cart, onBack, onUpdateQuantity, onRemove }) {
     setForm((current) => ({ ...current, [name]: value }));
   };
 
-  const submitOrder = (event) => {
+  const submitOrder = async (event) => {
     event.preventDefault();
     if (!cart.length) return;
     const orderLines = cart.map((item, index) => (
@@ -417,6 +404,29 @@ function CheckoutPage({ cart, onBack, onUpdateQuantity, onRemove }) {
       `Address: ${form.address}`,
       form.note ? `Note: ${form.note}` : '',
     ].filter(Boolean).join('\n');
+
+    if (isSupabaseConfigured) {
+      try {
+        await createOrder({
+          customer_name: form.name,
+          phone: form.phone,
+          city: form.city,
+          address: form.address,
+          note: form.note || null,
+          items: cart.map((item) => ({
+            product_id: item.product.dbId || item.product.id,
+            product_name: item.product.name,
+            size: item.size,
+            quantity: item.quantity,
+            price: item.product.price,
+          })),
+          total,
+          status: 'whatsapp_opened',
+        });
+      } catch (error) {
+        console.warn(error);
+      }
+    }
 
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
@@ -475,7 +485,7 @@ function CheckoutPage({ cart, onBack, onUpdateQuantity, onRemove }) {
   );
 }
 
-function CustomPrintPage({ teams, selectedTeamId, onBack }) {
+function CustomPrintPage({ teams, products, selectedTeamId, onBack }) {
   const [printName, setPrintName] = useState('YOUR NAME');
   const [printNumber, setPrintNumber] = useState('10');
   const [size, setSize] = useState('M');
@@ -634,14 +644,39 @@ export default function App() {
   const [view, setView] = useState(() => viewFromPath(window.location.pathname));
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [productReturnView, setProductReturnView] = useState('home');
+  const [storeProducts, setStoreProducts] = useState(seedProducts);
+  const [storeTeams, setStoreTeams] = useState(seedTeams);
+  const [storeCategories, setStoreCategories] = useState(seedCategories);
+  const [storeHeroSlides, setStoreHeroSlides] = useState(seedHeroSlides);
+  const [contentNotice, setContentNotice] = useState('');
 
-  const selectedTeam = teams.find((team) => team.id === selectedTeamId) || teams[0];
-  const filteredProducts = useMemo(() => products.filter((product) => {
+  const selectedTeam = storeTeams.find((team) => team.id === selectedTeamId) || storeTeams[0];
+  const categoryFilters = ['All', ...storeCategories.map((item) => item.name)];
+  const filteredProducts = useMemo(() => storeProducts.filter((product) => {
     const matchesTeam = product.teamId === selectedTeamId;
     const matchesCategory = category === 'All' || product.category === category;
     const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase());
     return matchesTeam && matchesCategory && matchesSearch;
-  }), [selectedTeamId, category, search]);
+  }), [storeProducts, selectedTeamId, category, search]);
+
+  const refreshStoreContent = async () => {
+    if (!isSupabaseConfigured) return;
+    try {
+      const content = await fetchStoreContent();
+      if (content.products.length) setStoreProducts(content.products);
+      if (content.teams.length) {
+        setStoreTeams(content.teams);
+        if (!content.teams.some((team) => team.id === selectedTeamId)) {
+          setSelectedTeamId(content.teams[0].id);
+        }
+      }
+      if (content.categories.length) setStoreCategories(content.categories);
+      if (content.heroSlides.length) setStoreHeroSlides(content.heroSlides);
+      setContentNotice('');
+    } catch (error) {
+      setContentNotice(`Using local content because Supabase could not load: ${error.message}`);
+    }
+  };
 
   const navigateView = (nextView, { replace = false } = {}) => {
     setView(nextView);
@@ -662,6 +697,10 @@ export default function App() {
     window.history.replaceState({ view }, '', window.location.pathname);
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  useEffect(() => {
+    refreshStoreContent();
   }, []);
 
   const selectTeam = (teamId, options = {}) => {
@@ -738,7 +777,7 @@ export default function App() {
   };
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${view === 'dashboard' ? 'dashboard-open' : ''}`}>
       <header className="site-header">
         <button className="brand brand-button" onClick={showHome} aria-label="Kitline home">
           <span className="brand-ball">K</span>
@@ -750,6 +789,7 @@ export default function App() {
           <a href="/shop" onClick={(event) => { event.preventDefault(); showShop(); setMenuOpen(false); }}>Shop</a>
           <a href="/custom-print" onClick={(event) => { event.preventDefault(); showCustom(); setMenuOpen(false); }}>Your Jersey</a>
           <a href="/#teams" onClick={(event) => { event.preventDefault(); showHome(); setMenuOpen(false); }}>National teams</a>
+          <a href="/dashboard" onClick={(event) => { event.preventDefault(); navigateView('dashboard'); setMenuOpen(false); }}>Dashboard</a>
         </nav>
 
         <div className="header-actions">
@@ -774,10 +814,10 @@ export default function App() {
         </div>
       </header>
 
-      <aside className="team-sidebar" id="teams">
+      {view !== 'dashboard' && <aside className="team-sidebar" id="teams">
         <p className="sidebar-title">Select team</p>
         <div className="team-list">
-          {teams.map((team) => (
+          {storeTeams.map((team) => (
             <button
               key={team.id}
               className={`team-button ${selectedTeamId === team.id ? 'active' : ''}`}
@@ -790,13 +830,16 @@ export default function App() {
             </button>
           ))}
         </div>
-      </aside>
+      </aside>}
 
       <main>
+        {contentNotice && <div className="content-notice">{contentNotice}</div>}
+
         {view === 'home' && (
           <HomePage
-            products={products}
-            teams={teams}
+            products={storeProducts}
+            teams={storeTeams}
+            heroSlides={storeHeroSlides}
             likedProducts={favorites}
             onLike={toggleFavorite}
             onOpen={openProduct}
@@ -824,7 +867,7 @@ export default function App() {
           </div>
 
           <div className="filter-row">
-            {['All', 'Jerseys', 'Sandals', 'Tattoos', 'Shoes'].map((item) => (
+            {categoryFilters.map((item) => (
               <button key={item} className={category === item ? 'active' : ''} onClick={() => setCategory(item)}>
                 {item}
               </button>
@@ -867,7 +910,7 @@ export default function App() {
           <ProductPage
             key={selectedProduct.id}
             product={selectedProduct}
-            team={teams.find((team) => team.id === selectedProduct.teamId) || selectedTeam}
+            team={storeTeams.find((team) => team.id === selectedProduct.teamId) || selectedTeam}
             liked={favorites.includes(selectedProduct.id)}
             onLike={toggleFavorite}
             onBack={productReturnView === 'home' ? showHome : showShop}
@@ -887,9 +930,19 @@ export default function App() {
 
         {view === 'custom' && (
           <CustomPrintPage
-            teams={teams}
+            teams={storeTeams}
+            products={storeProducts}
             selectedTeamId={selectedTeamId}
             onBack={showShop}
+          />
+        )}
+
+        {view === 'dashboard' && (
+          <DashboardPage
+            seedProducts={seedProducts}
+            seedTeams={seedTeams}
+            seedCategories={seedCategories}
+            onRefreshStore={refreshStoreContent}
           />
         )}
       </main>

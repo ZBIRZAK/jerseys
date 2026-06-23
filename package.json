@@ -7,7 +7,11 @@
     "node": ">=16.0.0"
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "node scripts/dev.mjs",
+    "dev:vite": "vite",
+    "dev:upload": "node scripts/upload-server.mjs",
+    "import:products": "node scripts/import-local-products.mjs",
+    "import:products:supabase": "node scripts/import-products-to-supabase.mjs",
     "build": "vite build",
     "preview": "vite preview"
   },

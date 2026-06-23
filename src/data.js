@@ -1,3 +1,5 @@
+import { importedProducts } from './importedProducts.js';
+
 export const teams = [
   { id: 'morocco', name: 'Morocco', code: 'MAR', colors: ['#d71920', '#087a4a'], logo: '/team-logos/morocco.png' },
   { id: 'france', name: 'France', code: 'FRA', colors: ['#133a8a', '#e62b3a'], logo: '/team-logos/france.png' },
@@ -19,6 +21,37 @@ export const teams = [
   { id: 'netherlands', name: 'Netherlands', code: 'NED', colors: ['#f36d21', '#173c87'], logo: '/team-logos/netherlands.png' },
   { id: 'belgium', name: 'Belgium', code: 'BEL', colors: ['#171717', '#d82735'], logo: '/team-logos/belgium.png' },
   { id: 'croatia', name: 'Croatia', code: 'CRO', colors: ['#d61f35', '#ffffff'], logo: '/team-logos/croatia.png' },
+];
+
+export const categories = [
+  { id: 'jerseys', name: 'Jerseys', sortOrder: 1 },
+  { id: 'sandals', name: 'Sandals', sortOrder: 2 },
+  { id: 'tattoos', name: 'Tattoos', sortOrder: 3 },
+  { id: 'shoes', name: 'Shoes', sortOrder: 4 },
+];
+
+export const heroSlides = [
+  {
+    id: 'france-home-hero',
+    image: '/product-gallery/france/france-home-alt-2.jpg',
+    alt: 'Model wearing the France home jersey',
+    sortOrder: 1,
+    isActive: true,
+  },
+  {
+    id: 'brazil-away-hero',
+    image: '/product-gallery/brazil/brazil-away-alt-2.jpg',
+    alt: 'Model wearing the Brazil away jersey',
+    sortOrder: 2,
+    isActive: true,
+  },
+  {
+    id: 'brazil-hoodie-hero',
+    image: '/product-gallery/brazil/brazil-yellow-hoodie-alt-2.jpg',
+    alt: 'Model wearing the Brazil yellow match hoodie',
+    sortOrder: 3,
+    isActive: true,
+  },
 ];
 
 const jerseyByTeam = {
@@ -195,7 +228,7 @@ function rotateGallery(items, startIndex, count = 3) {
   ));
 }
 
-export const products = teams.flatMap((team, teamIndex) => [
+const generatedProducts = teams.flatMap((team, teamIndex) => [
   {
     id: `${team.id}-home`,
     teamId: team.id,
@@ -243,8 +276,8 @@ export const products = teams.flatMap((team, teamIndex) => [
         price: 94,
         image: brazilHoodieAlbumImages[0],
         gallery: brazilHoodieAlbumImages,
-      badge: 'Fan favorite',
-      color: team.colors[1],
+        badge: 'Fan favorite',
+        color: team.colors[1],
       }]
     : []),
   ...(team.id === 'france' || team.id === 'brazil'
@@ -285,3 +318,5 @@ export const products = teams.flatMap((team, teamIndex) => [
       },
     ]),
 ]);
+
+export const products = [...generatedProducts, ...importedProducts];
