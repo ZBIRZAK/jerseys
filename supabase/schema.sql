@@ -169,7 +169,8 @@ insert into public.categories (slug, name, sort_order) values
   ('jerseys', 'Jerseys', 1),
   ('sandals', 'Sandals', 2),
   ('tattoos', 'Tattoos', 3),
-  ('shoes', 'Shoes', 4)
+  ('shoes', 'Shoes', 4),
+  ('survette', 'Survette', 5)
 on conflict (slug) do update set name = excluded.name, sort_order = excluded.sort_order;
 
 insert into public.store_settings (key, value, sort_order) values

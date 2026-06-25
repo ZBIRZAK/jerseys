@@ -13,6 +13,10 @@ function formatPrice(value) {
 const VIEW_PATHS = {
   home: '/',
   shop: '/shop',
+  jerseys: '/jerseys',
+  sandals: '/sandals',
+  tattoos: '/tattoos',
+  survette: '/survette',
   custom: '/custom-print',
   checkout: '/checkout',
   dashboard: '/dashboard',
@@ -20,10 +24,27 @@ const VIEW_PATHS = {
 
 function viewFromPath(pathname) {
   if (pathname === VIEW_PATHS.shop) return 'shop';
+  if (pathname === VIEW_PATHS.jerseys) return 'jerseys';
+  if (pathname === VIEW_PATHS.sandals) return 'sandals';
+  if (pathname === VIEW_PATHS.tattoos) return 'tattoos';
+  if (pathname === VIEW_PATHS.survette) return 'survette';
   if (pathname === VIEW_PATHS.custom) return 'custom';
   if (pathname === VIEW_PATHS.checkout) return 'checkout';
   if (pathname === VIEW_PATHS.dashboard) return 'dashboard';
   return 'home';
+}
+
+const SURVETTE_PATTERN = /(survette|tracksuit|track suit|hoodie|training|half[-\s]?zip|half[-\s]?pull|jacket|top)/i;
+
+function getProductGroup(product) {
+  if (product.category === 'Survette' || SURVETTE_PATTERN.test(product.name)) return 'Survette';
+  return product.category;
+}
+
+function matchesProductGroup(product, group) {
+  if (group === 'All') return true;
+  if (group === 'Jerseys') return product.category === 'Jerseys' && getProductGroup(product) !== 'Survette';
+  return getProductGroup(product) === group;
 }
 
 function getProductImage(product) {
@@ -46,6 +67,10 @@ function Icon({ name }) {
     minus: <path d="M5 12h14" />,
     trash: <><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13" /></>,
     whatsapp: <><path d="M20 11.5a8 8 0 0 1-11.8 7L4 20l1.5-4A8 8 0 1 1 20 11.5Z" /><path d="M9 8.5c.5 2.5 2 4 4.5 5" /></>,
+    jersey: <><path d="M6.2 6.8h3.1c.5.8 1.4 1.3 2.7 1.3s2.2-.5 2.7-1.3h3.1l2.1 1.7v4.1h-2.7v6.8H6.8v-6.8H4.1V8.5l2.1-1.7Z" /><path d="M9.3 6.8v2.1c.6.7 1.5 1 2.7 1s2.1-.3 2.7-1V6.8" /><path d="M4.1 8.5h2.7M17.2 8.5h2.7M8.7 16.5h6.6" /><path d="m12.6 13.3 1.1-1.1M10.7 13.3l1.1-1.1" /></>,
+    survette: <><path d="M9.2 4.4 5.6 6 4 15.1l2.8.7 1-5.6v9.2h8.4v-9.2l1 5.6 2.8-.7L18.4 6l-3.6-1.6" /><path d="M9.2 4.4h5.6l-1.3 3h-3l-1.3-3Z" /><path d="M12 7.4v12" /><path d="m8.3 8.5 3.7-1.1 3.7 1.1" /><path d="M8.9 17h6.2" /><path d="m9.1 13.7 1.1-1.1M13.8 13.7l1.1-1.1" /></>,
+    sandal: <><path d="M4.1 15.5c.9-2.1 2.5-3.4 4.8-3.8l2.3-3.1c.5-.7 1.4-.9 2.1-.5l5.1 2.8c1.2.7 1.8 1.7 1.8 3.1v2.2c0 .8-.6 1.4-1.4 1.4H6.2c-1.6 0-2.6-.9-2.1-2.1Z" /><path d="M8.9 11.7c1.2.1 2.4.6 3.8 1.5l2.7-2.9" /><path d="M12.7 13.2h7.4M4.6 16.7h15.1" /><path d="M8 14.3h.1M10 14.3h.1M14.3 12.3l1.5.8M16.1 11.3l1.5.8" /></>,
+    tattoo: <><path d="M12 4.2 14.2 9l5.1.7-3.7 3.6.9 5.1-4.5-2.4-4.5 2.4.9-5.1-3.7-3.6L9.8 9 12 4.2Z" /><path d="m10 11.8 1.4 1.4 2.9-3.2" /></>,
   };
   return <svg viewBox="0 0 24 24" aria-hidden="true">{paths[name]}</svg>;
 }
@@ -67,6 +92,35 @@ function TeamMark({ team, small = false, sidebar = false }) {
       />
       <span className="team-logo-fallback" hidden>{team.code.slice(0, 2)}</span>
     </span>
+  );
+}
+
+function MobileCategoryNav({ currentView, onNavigate }) {
+  const items = [
+    { view: 'jerseys', href: '/jerseys', label: 'Jerseys', icon: 'jersey' },
+    { view: 'survette', href: '/survette', label: 'Survette', icon: 'survette' },
+    { view: 'sandals', href: '/sandals', label: 'Sandals', icon: 'sandal' },
+    { view: 'tattoos', href: '/tattoos', label: 'Tattoos', icon: 'tattoo' },
+  ];
+
+  return (
+    <nav className="mobile-category-nav" aria-label="Product categories">
+      {items.map((item) => (
+        <a
+          key={item.view}
+          href={item.href}
+          className={currentView === item.view ? 'active' : ''}
+          onClick={(event) => {
+            event.preventDefault();
+            onNavigate(item.view);
+          }}
+          aria-label={item.label}
+          title={item.label}
+        >
+          <Icon name={item.icon} />
+        </a>
+      ))}
+    </nav>
   );
 }
 
@@ -191,6 +245,119 @@ function HomePage({ products, teams, heroSlides, likedProducts, onLike, onOpen }
       {featuredJerseys.length > 0 && renderProductSection('Featured jerseys.', featuredJerseys, 'featured')}
       {featuredSandals.length > 0 && renderProductSection('Sandals.', featuredSandals, 'sandals')}
       {featuredTattoos.length > 0 && renderProductSection('Tattoos.', featuredTattoos, 'tattoos')}
+    </>
+  );
+}
+
+const PRODUCT_PAGE_COPY = {
+  Jerseys: {
+    heading: 'Jerseys',
+    accent: 'match ready.',
+    description: 'Search national team shirts, home kits, away kits, and supporter essentials.',
+  },
+  Sandals: {
+    heading: 'Sandals',
+    accent: 'fan comfort.',
+    description: 'Easy everyday slides and sandals with national colors for match days and street wear.',
+  },
+  Tattoos: {
+    heading: 'Tattoos',
+    accent: 'small details.',
+    description: 'Temporary fan tattoos and team marks for World Cup nights, photos, and stadium energy.',
+  },
+  Survette: {
+    heading: 'Survette',
+    accent: 'training style.',
+    description: 'Hoodies, tracksuits, training tops, and warm fan layers from the national team collections.',
+  },
+};
+
+function CategoryPage({ categoryName, products, teams, likedProducts, onLike, onOpen, returnView }) {
+  const [query, setQuery] = useState('');
+  const [teamFilter, setTeamFilter] = useState('All');
+  const pageCopy = PRODUCT_PAGE_COPY[categoryName];
+  const groupedProducts = useMemo(
+    () => products.filter((product) => matchesProductGroup(product, categoryName)),
+    [products, categoryName],
+  );
+  const availableTeams = useMemo(() => teams.filter((team) => (
+    groupedProducts.some((product) => product.teamId === team.id)
+  )), [teams, groupedProducts]);
+  const visibleProducts = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    return groupedProducts.filter((product) => {
+      const team = teams.find((item) => item.id === product.teamId);
+      const matchesTeam = teamFilter === 'All' || product.teamId === teamFilter;
+      const searchableText = `${product.name} ${product.category} ${team?.name || ''} ${team?.code || ''}`.toLowerCase();
+      return matchesTeam && (!normalizedQuery || searchableText.includes(normalizedQuery));
+    });
+  }, [groupedProducts, query, teamFilter, teams]);
+
+  const resetFilters = () => {
+    setQuery('');
+    setTeamFilter('All');
+  };
+
+  return (
+    <>
+      <section className="category-hero">
+        <div>
+          <p className="eyebrow">Shop by category</p>
+          <h1>{pageCopy.heading}<br /><em>{pageCopy.accent}</em></h1>
+          <p>{pageCopy.description}</p>
+        </div>
+        <label className="category-search">
+          <Icon name="search" />
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder={`Search ${categoryName.toLowerCase()}`}
+            aria-label={`Search ${categoryName}`}
+          />
+        </label>
+      </section>
+
+      <section className="catalog-section shop-catalog category-catalog">
+        <div className="section-heading">
+          <div>
+            <h2>{categoryName} products.</h2>
+          </div>
+          <p>{visibleProducts.length} products</p>
+        </div>
+
+        <div className="filter-row category-team-row">
+          <button className={teamFilter === 'All' ? 'active' : ''} onClick={() => setTeamFilter('All')}>All teams</button>
+          {availableTeams.map((team) => (
+            <button key={team.id} className={teamFilter === team.id ? 'active' : ''} onClick={() => setTeamFilter(team.id)}>
+              {team.name}
+            </button>
+          ))}
+        </div>
+
+        {visibleProducts.length ? (
+          <div className="product-grid">
+            {visibleProducts.map((product) => {
+              const team = teams.find((item) => item.id === product.teamId) || teams[0];
+              return (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  team={team}
+                  liked={likedProducts.includes(product.id)}
+                  onLike={onLike}
+                  onOpen={(item) => onOpen(item, returnView)}
+                />
+              );
+            })}
+          </div>
+        ) : (
+          <div className="empty-state">
+            <h3>No products found</h3>
+            <p>Try another team or search word.</p>
+            <button onClick={resetFilters}>Reset filters</button>
+          </div>
+        )}
+      </section>
     </>
   );
 }
@@ -651,10 +818,10 @@ export default function App() {
   const [contentNotice, setContentNotice] = useState('');
 
   const selectedTeam = storeTeams.find((team) => team.id === selectedTeamId) || storeTeams[0];
-  const categoryFilters = ['All', ...storeCategories.map((item) => item.name)];
+  const categoryFilters = ['All', ...new Set([...storeCategories.map((item) => item.name), 'Survette'])];
   const filteredProducts = useMemo(() => storeProducts.filter((product) => {
     const matchesTeam = product.teamId === selectedTeamId;
-    const matchesCategory = category === 'All' || product.category === category;
+    const matchesCategory = matchesProductGroup(product, category);
     const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase());
     return matchesTeam && matchesCategory && matchesSearch;
   }), [storeProducts, selectedTeamId, category, search]);
@@ -735,6 +902,12 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const showCatalogView = (nextView) => {
+    navigateView(nextView);
+    setSelectedProduct(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const showCheckout = () => {
     navigateView('checkout');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -787,8 +960,11 @@ export default function App() {
         <nav className={menuOpen ? 'main-nav open' : 'main-nav'} aria-label="Main navigation">
           <a href="/" onClick={(event) => { event.preventDefault(); showHome(); setMenuOpen(false); }}>Home</a>
           <a href="/shop" onClick={(event) => { event.preventDefault(); showShop(); setMenuOpen(false); }}>Shop</a>
+          <a href="/jerseys" onClick={(event) => { event.preventDefault(); showCatalogView('jerseys'); setMenuOpen(false); }}>Jerseys</a>
+          <a href="/sandals" onClick={(event) => { event.preventDefault(); showCatalogView('sandals'); setMenuOpen(false); }}>Sandals</a>
+          <a href="/tattoos" onClick={(event) => { event.preventDefault(); showCatalogView('tattoos'); setMenuOpen(false); }}>Tattoos</a>
+          <a href="/survette" onClick={(event) => { event.preventDefault(); showCatalogView('survette'); setMenuOpen(false); }}>Survette</a>
           <a href="/custom-print" onClick={(event) => { event.preventDefault(); showCustom(); setMenuOpen(false); }}>Your Jersey</a>
-          <a href="/#teams" onClick={(event) => { event.preventDefault(); showHome(); setMenuOpen(false); }}>National teams</a>
           <a href="/dashboard" onClick={(event) => { event.preventDefault(); navigateView('dashboard'); setMenuOpen(false); }}>Dashboard</a>
         </nav>
 
@@ -831,6 +1007,10 @@ export default function App() {
           ))}
         </div>
       </aside>}
+
+      {view !== 'dashboard' && (
+        <MobileCategoryNav currentView={view} onNavigate={showCatalogView} />
+      )}
 
       <main>
         {contentNotice && <div className="content-notice">{contentNotice}</div>}
@@ -906,6 +1086,54 @@ export default function App() {
           </>
         )}
 
+        {view === 'jerseys' && (
+          <CategoryPage
+            categoryName="Jerseys"
+            products={storeProducts}
+            teams={storeTeams}
+            likedProducts={favorites}
+            onLike={toggleFavorite}
+            onOpen={openProduct}
+            returnView="jerseys"
+          />
+        )}
+
+        {view === 'sandals' && (
+          <CategoryPage
+            categoryName="Sandals"
+            products={storeProducts}
+            teams={storeTeams}
+            likedProducts={favorites}
+            onLike={toggleFavorite}
+            onOpen={openProduct}
+            returnView="sandals"
+          />
+        )}
+
+        {view === 'tattoos' && (
+          <CategoryPage
+            categoryName="Tattoos"
+            products={storeProducts}
+            teams={storeTeams}
+            likedProducts={favorites}
+            onLike={toggleFavorite}
+            onOpen={openProduct}
+            returnView="tattoos"
+          />
+        )}
+
+        {view === 'survette' && (
+          <CategoryPage
+            categoryName="Survette"
+            products={storeProducts}
+            teams={storeTeams}
+            likedProducts={favorites}
+            onLike={toggleFavorite}
+            onOpen={openProduct}
+            returnView="survette"
+          />
+        )}
+
         {view === 'product' && selectedProduct && (
           <ProductPage
             key={selectedProduct.id}
@@ -913,7 +1141,7 @@ export default function App() {
             team={storeTeams.find((team) => team.id === selectedProduct.teamId) || selectedTeam}
             liked={favorites.includes(selectedProduct.id)}
             onLike={toggleFavorite}
-            onBack={productReturnView === 'home' ? showHome : showShop}
+            onBack={() => showCatalogView(productReturnView)}
             onAdd={addToCart}
             onCheckout={buyNow}
           />

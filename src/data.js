@@ -28,6 +28,7 @@ export const categories = [
   { id: 'sandals', name: 'Sandals', sortOrder: 2 },
   { id: 'tattoos', name: 'Tattoos', sortOrder: 3 },
   { id: 'shoes', name: 'Shoes', sortOrder: 4 },
+  { id: 'survette', name: 'Survette', sortOrder: 5 },
 ];
 
 export const heroSlides = [
