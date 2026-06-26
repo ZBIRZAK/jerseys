@@ -1,4 +1,4 @@
-import { copyFile, mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
+import { access, copyFile, mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -88,6 +88,17 @@ function sortFiles(files) {
   });
 }
 
+async function preferredPublicPath(publicPath) {
+  const webpPath = publicPath.replace(/\.(jpe?g|png)$/i, '.webp');
+  if (webpPath === publicPath) return publicPath;
+  try {
+    await access(path.join(projectRoot, 'public', webpPath.replace(/^\//, '')));
+    return webpPath;
+  } catch {
+    return publicPath;
+  }
+}
+
 async function main() {
   await mkdir(publicProductsRoot, { recursive: true });
   await mkdir(path.dirname(jsonOutputFile), { recursive: true });
@@ -115,7 +126,7 @@ async function main() {
       const label = file === 'primary.jpg' ? 'primary' : path.basename(file, extension);
       const targetName = `${productSlug}-${label}${extension}`;
       await copyFile(source, path.join(publicProductsRoot, targetName));
-      gallery.push(`/products/${targetName}`);
+      gallery.push(await preferredPublicPath(`/products/${targetName}`));
     }
 
     products.push({

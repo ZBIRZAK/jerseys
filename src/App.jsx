@@ -50,7 +50,7 @@ function matchesProductGroup(product, group) {
 function getProductImage(product) {
   if (product.gallery?.length) return product.gallery[0];
   if (product.category !== 'Jerseys') return product.image;
-  const filename = product.image.split('/').pop().replace(/\.[^.]+$/, '.png');
+  const filename = product.image.split('/').pop().replace(/\.[^.]+$/, '.webp');
   return `/jerseys-transparent/${filename}`;
 }
 
