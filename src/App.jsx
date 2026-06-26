@@ -972,7 +972,6 @@ export default function App() {
           <a href="/tattoos" onClick={(event) => { event.preventDefault(); showCatalogView('tattoos'); setMenuOpen(false); }}>Tattoos</a>
           <a href="/survette" onClick={(event) => { event.preventDefault(); showCatalogView('survette'); setMenuOpen(false); }}>Survette</a>
           <a href="/custom-print" onClick={(event) => { event.preventDefault(); showCustom(); setMenuOpen(false); }}>Your Jersey</a>
-          <a href="/dashboard" onClick={(event) => { event.preventDefault(); navigateView('dashboard'); setMenuOpen(false); }}>Dashboard</a>
         </nav>
 
         <div className="header-actions">
