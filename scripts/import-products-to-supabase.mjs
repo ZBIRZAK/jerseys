@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { categories, teams } from '../src/data.js';
@@ -37,13 +37,26 @@ async function request(table, rows, env) {
   }
 }
 
+async function readProductsJson(fileName) {
+  const filePath = path.join(projectRoot, 'supabase', fileName);
+  try {
+    await access(filePath);
+  } catch {
+    return [];
+  }
+  return JSON.parse(await readFile(filePath, 'utf8'));
+}
+
 async function main() {
   const env = parseEnv(await readFile(path.join(projectRoot, '.env'), 'utf8'));
   if (!env.VITE_SUPABASE_URL || !env.VITE_SUPABASE_ANON_KEY) {
     throw new Error('Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY in .env');
   }
 
-  const products = JSON.parse(await readFile(path.join(projectRoot, 'supabase', 'import-products.json'), 'utf8'));
+  const products = [
+    ...(await readProductsJson('import-products.json')),
+    ...(await readProductsJson('import-tracksuits.json')),
+  ];
   const teamRows = teams.map((team, index) => ({
     slug: team.id,
     name: team.name,

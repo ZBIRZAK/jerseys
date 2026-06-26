@@ -363,8 +363,8 @@ function CategoryPage({ categoryName, products, teams, likedProducts, onLike, on
 }
 
 function ProductPage({ product, team, liked, onLike, onBack, onAdd, onCheckout }) {
-  const sizes = product.category === 'Jerseys'
-    ? ['S', 'M', 'L', 'XL', '2XL']
+  const sizes = product.category === 'Jerseys' || product.category === 'Survette'
+    ? ['S', 'M', 'L', 'XL', '2XL', '3XL']
     : product.category === 'Tattoos'
       ? ['One size']
       : ['38', '39', '40', '41', '42', '43', '44'];
@@ -818,6 +818,13 @@ export default function App() {
   const [contentNotice, setContentNotice] = useState('');
 
   const selectedTeam = storeTeams.find((team) => team.id === selectedTeamId) || storeTeams[0];
+  const teamsWithProducts = useMemo(() => new Set(storeProducts.map((product) => product.teamId)), [storeProducts]);
+  const sidebarTeams = useMemo(() => [...storeTeams].sort((first, second) => {
+    const firstHasProducts = teamsWithProducts.has(first.id);
+    const secondHasProducts = teamsWithProducts.has(second.id);
+    if (firstHasProducts !== secondHasProducts) return firstHasProducts ? -1 : 1;
+    return 0;
+  }), [storeTeams, teamsWithProducts]);
   const categoryFilters = ['All', ...new Set([...storeCategories.map((item) => item.name), 'Survette'])];
   const filteredProducts = useMemo(() => storeProducts.filter((product) => {
     const matchesTeam = product.teamId === selectedTeamId;
@@ -919,7 +926,7 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const addToCart = (product, size = product.category === 'Jerseys' ? 'M' : product.category === 'Tattoos' ? 'One size' : '39', quantity = 1) => {
+  const addToCart = (product, size = product.category === 'Jerseys' || product.category === 'Survette' ? 'M' : product.category === 'Tattoos' ? 'One size' : '39', quantity = 1) => {
     const key = `${product.id}-${size}`;
     setCart((current) => {
       const existing = current.find((item) => item.key === key);
@@ -993,7 +1000,7 @@ export default function App() {
       {view !== 'dashboard' && <aside className="team-sidebar" id="teams">
         <p className="sidebar-title">Select team</p>
         <div className="team-list">
-          {storeTeams.map((team) => (
+          {sidebarTeams.map((team) => (
             <button
               key={team.id}
               className={`team-button ${selectedTeamId === team.id ? 'active' : ''}`}

@@ -1,4 +1,5 @@
 import { importedProducts } from './importedProducts.js';
+import { importedTracksuits } from './importedTracksuits.js';
 
 export const teams = [
   { id: 'morocco', name: 'Morocco', code: 'MAR', colors: ['#d71920', '#087a4a'], logo: '/team-logos/morocco.png' },
@@ -18,6 +19,7 @@ export const teams = [
   { id: 'south-korea', name: 'South Korea', code: 'KOR', colors: ['#d9233f', '#173d85'], logo: '/team-logos/south-korea.png' },
   { id: 'mexico', name: 'Mexico', code: 'MEX', colors: ['#087b4b', '#d62435'], logo: '/team-logos/mexico.png' },
   { id: 'usa', name: 'United States', code: 'USA', colors: ['#203e83', '#d3283e'], logo: '/team-logos/usa.png' },
+  { id: 'norway', name: 'Norway', code: 'NOR', colors: ['#ba0c2f', '#ffffff'], logo: '/team-logos/norway.svg' },
   { id: 'netherlands', name: 'Netherlands', code: 'NED', colors: ['#f36d21', '#173c87'], logo: '/team-logos/netherlands.png' },
   { id: 'belgium', name: 'Belgium', code: 'BEL', colors: ['#171717', '#d82735'], logo: '/team-logos/belgium.png' },
   { id: 'croatia', name: 'Croatia', code: 'CRO', colors: ['#d61f35', '#ffffff'], logo: '/team-logos/croatia.png' },
@@ -119,6 +121,7 @@ export const jerseyPrintByTeam = {
   'south-korea': { top: '29.1%', width: '34%', color: '#171816', outline: 'rgba(255, 255, 255, .7)' },
   mexico: { top: '29.6%', width: '37%', color: '#132316', outline: 'rgba(255, 255, 255, .64)' },
   usa: { top: '29.5%', width: '35%', color: '#171816', outline: 'rgba(255, 255, 255, .72)' },
+  norway: { top: '29.6%', width: '35%', color: '#f6f4ef', outline: 'rgba(24, 24, 24, .84)' },
   netherlands: { top: '29.8%', width: '34%', color: '#101417', outline: 'rgba(255, 157, 82, .76)' },
   belgium: { top: '29.6%', width: '35%', color: '#f3efe6', outline: 'rgba(18, 18, 18, .86)' },
   croatia: { top: '30.6%', width: '35%', color: '#171816', outline: 'rgba(255, 255, 255, .72)' },
@@ -229,7 +232,7 @@ function rotateGallery(items, startIndex, count = 3) {
   ));
 }
 
-const generatedProducts = teams.flatMap((team, teamIndex) => [
+const generatedProducts = teams.filter((team) => jerseyByTeam[team.id]).flatMap((team, teamIndex) => [
   {
     id: `${team.id}-home`,
     teamId: team.id,
@@ -320,4 +323,4 @@ const generatedProducts = teams.flatMap((team, teamIndex) => [
     ]),
 ]);
 
-export const products = [...generatedProducts, ...importedProducts];
+export const products = [...generatedProducts, ...importedProducts, ...importedTracksuits];
