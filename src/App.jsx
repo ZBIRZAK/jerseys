@@ -10,6 +10,18 @@ function formatPrice(value) {
   return `${value} ${CURRENCY}`;
 }
 
+const CATEGORY_LABELS_FR = {
+  All: 'Tout',
+  Jerseys: 'Maillots',
+  Sandals: 'Sandales',
+  Tattoos: 'Tatouages',
+  Survette: 'Survêtements',
+};
+
+function getCategoryLabel(category) {
+  return CATEGORY_LABELS_FR[category] || category;
+}
+
 const VIEW_PATHS = {
   home: '/',
   shop: '/shop',
@@ -69,7 +81,7 @@ function Icon({ name }) {
     whatsapp: <><path d="M20 11.5a8 8 0 0 1-11.8 7L4 20l1.5-4A8 8 0 1 1 20 11.5Z" /><path d="M9 8.5c.5 2.5 2 4 4.5 5" /></>,
     jersey: <><path d="M6.2 6.8h3.1c.5.8 1.4 1.3 2.7 1.3s2.2-.5 2.7-1.3h3.1l2.1 1.7v4.1h-2.7v6.8H6.8v-6.8H4.1V8.5l2.1-1.7Z" /><path d="M9.3 6.8v2.1c.6.7 1.5 1 2.7 1s2.1-.3 2.7-1V6.8" /><path d="M4.1 8.5h2.7M17.2 8.5h2.7M8.7 16.5h6.6" /><path d="m12.6 13.3 1.1-1.1M10.7 13.3l1.1-1.1" /></>,
     survette: <><path d="M9.2 4.4 5.6 6 4 15.1l2.8.7 1-5.6v9.2h8.4v-9.2l1 5.6 2.8-.7L18.4 6l-3.6-1.6" /><path d="M9.2 4.4h5.6l-1.3 3h-3l-1.3-3Z" /><path d="M12 7.4v12" /><path d="m8.3 8.5 3.7-1.1 3.7 1.1" /><path d="M8.9 17h6.2" /><path d="m9.1 13.7 1.1-1.1M13.8 13.7l1.1-1.1" /></>,
-    sandal: <><path d="M4.1 15.5c.9-2.1 2.5-3.4 4.8-3.8l2.3-3.1c.5-.7 1.4-.9 2.1-.5l5.1 2.8c1.2.7 1.8 1.7 1.8 3.1v2.2c0 .8-.6 1.4-1.4 1.4H6.2c-1.6 0-2.6-.9-2.1-2.1Z" /><path d="M8.9 11.7c1.2.1 2.4.6 3.8 1.5l2.7-2.9" /><path d="M12.7 13.2h7.4M4.6 16.7h15.1" /><path d="M8 14.3h.1M10 14.3h.1M14.3 12.3l1.5.8M16.1 11.3l1.5.8" /></>,
+    sandal: <><path d="M4.3 14.9 8 7.4c.3-.7 1.1-1 1.8-.8l5.1 1.8c.7.2 1.2.9 1.2 1.7v1.7" /><path d="M4.1 15.4h8.5c1.2 0 2.2-.6 2.9-1.6l1.2-1.7" /><path d="M4.1 15.4 3.6 17h8.8c1.1 0 2.1-.5 2.8-1.3l1-1.2" /><path d="M8.1 8.6h5.6M9.4 10.9l3.1 1.1M6.6 14.7l.7 1.8M9.3 14.7 10 17M11.8 14.5l.8 1.9" /><circle cx="17.8" cy="14.7" r="3.6" /><path d="m17.8 12.8 1.1.8-.4 1.3h-1.4l-.4-1.3 1.1-.8Z" /><path d="m15.5 13.8 1.3-.2m2 .2 1.3-.2m-4.1 2 1-.8m2.3.8-.9-.8" /></>,
     tattoo: <><path d="M12 4.2 14.2 9l5.1.7-3.7 3.6.9 5.1-4.5-2.4-4.5 2.4.9-5.1-3.7-3.6L9.8 9 12 4.2Z" /><path d="m10 11.8 1.4 1.4 2.9-3.2" /></>,
   };
   return <svg viewBox="0 0 24 24" aria-hidden="true">{paths[name]}</svg>;
@@ -97,14 +109,14 @@ function TeamMark({ team, small = false, sidebar = false }) {
 
 function MobileCategoryNav({ currentView, onNavigate }) {
   const items = [
-    { view: 'jerseys', href: '/jerseys', label: 'Jerseys', icon: 'jersey' },
-    { view: 'survette', href: '/survette', label: 'Survette', icon: 'survette' },
-    { view: 'sandals', href: '/sandals', label: 'Sandals', icon: 'sandal' },
-    { view: 'tattoos', href: '/tattoos', label: 'Tattoos', icon: 'tattoo' },
+    { view: 'jerseys', href: '/jerseys', label: 'Maillots', iconSrc: '/icons/jersey.png' },
+    { view: 'survette', href: '/survette', label: 'Survêtements', iconSrc: '/icons/tracksuits.png' },
+    { view: 'sandals', href: '/sandals', label: 'Sandales', iconSrc: '/icons/football-boot-ball-source.png' },
+    { view: 'tattoos', href: '/tattoos', label: 'Tatouages', icon: 'tattoo' },
   ];
 
   return (
-    <nav className="mobile-category-nav" aria-label="Product categories">
+    <nav className="mobile-category-nav" aria-label="Catégories de produits">
       {items.map((item) => (
         <a
           key={item.view}
@@ -117,7 +129,13 @@ function MobileCategoryNav({ currentView, onNavigate }) {
           aria-label={item.label}
           title={item.label}
         >
-          <Icon name={item.icon} />
+          <span className="mobile-category-icon" aria-hidden="true">
+            {item.iconSrc ? (
+              <img src={item.iconSrc} alt="" aria-hidden="true" />
+            ) : (
+              <Icon name={item.icon} />
+            )}
+          </span>
         </a>
       ))}
     </nav>
@@ -145,7 +163,7 @@ function ProductCard({ product, team, liked, onLike, onOpen }) {
             event.stopPropagation();
             onLike(product.id);
           }}
-          aria-label={liked ? `Remove ${product.name} from favorites` : `Add ${product.name} to favorites`}
+          aria-label={liked ? `Retirer ${product.name} des favoris` : `Ajouter ${product.name} aux favoris`}
         >
           <Icon name="heart" />
         </button>
@@ -153,15 +171,15 @@ function ProductCard({ product, team, liked, onLike, onOpen }) {
         {product.category === 'Tattoos' && <TeamMark team={team} />}
       </div>
       <div className="product-info">
-        <p className="product-category">{team.code} / {product.category}</p>
+        <p className="product-category">{team.code} / {getCategoryLabel(product.category)}</p>
         <button className="product-title-button" onClick={() => onOpen(product)}><h3>{product.name}</h3></button>
         <div className="product-bottom">
           <p className="price">
             {formatPrice(product.price)}
             {product.oldPrice && <span>{formatPrice(product.oldPrice)}</span>}
           </p>
-          <button className="quick-add" onClick={() => onOpen(product)} aria-label={`View ${product.name}`}>
-            <span>View</span><Icon name="arrow" />
+          <button className="quick-add" onClick={() => onOpen(product)} aria-label={`Voir ${product.name}`}>
+            <span>Voir</span><Icon name="arrow" />
           </button>
         </div>
       </div>
@@ -227,14 +245,14 @@ function HomePage({ products, teams, heroSlides, likedProducts, onLike, onOpen }
             ))}
           </div>
           <div className="home-hero-overlay" aria-hidden="true" />
-          <div className="home-hero-dots" aria-label="Hero images">
+          <div className="home-hero-dots" aria-label="Images vedettes">
             {heroSlides.map((slide, index) => (
               <button
                 key={slide.id}
                 type="button"
                 className={index === activeSlide ? 'active' : ''}
                 onClick={() => setActiveSlide(index)}
-                aria-label={`Show hero image ${index + 1}`}
+                aria-label={`Afficher l'image ${index + 1}`}
                 aria-pressed={index === activeSlide}
               />
             ))}
@@ -242,33 +260,33 @@ function HomePage({ products, teams, heroSlides, likedProducts, onLike, onOpen }
         </div>
       </section>
 
-      {featuredJerseys.length > 0 && renderProductSection('Featured jerseys.', featuredJerseys, 'featured')}
-      {featuredSandals.length > 0 && renderProductSection('Sandals.', featuredSandals, 'sandals')}
-      {featuredTattoos.length > 0 && renderProductSection('Tattoos.', featuredTattoos, 'tattoos')}
+      {featuredJerseys.length > 0 && renderProductSection('Maillots en vedette.', featuredJerseys, 'featured')}
+      {featuredSandals.length > 0 && renderProductSection('Sandales.', featuredSandals, 'sandals')}
+      {featuredTattoos.length > 0 && renderProductSection('Tatouages.', featuredTattoos, 'tattoos')}
     </>
   );
 }
 
 const PRODUCT_PAGE_COPY = {
   Jerseys: {
-    heading: 'Jerseys',
-    accent: 'match ready.',
-    description: 'Search national team shirts, home kits, away kits, and supporter essentials.',
+    heading: 'Maillots',
+    accent: 'prêts pour le match.',
+    description: 'Découvrez les maillots des équipes nationales, domiciles, extérieurs et les essentiels des supporters.',
   },
   Sandals: {
-    heading: 'Sandals',
-    accent: 'fan comfort.',
-    description: 'Easy everyday slides and sandals with national colors for match days and street wear.',
+    heading: 'Sandales',
+    accent: 'confort supporter.',
+    description: 'Claquettes et sandales faciles à porter au quotidien, aux couleurs nationales pour les jours de match et la rue.',
   },
   Tattoos: {
-    heading: 'Tattoos',
-    accent: 'small details.',
-    description: 'Temporary fan tattoos and team marks for World Cup nights, photos, and stadium energy.',
+    heading: 'Tatouages',
+    accent: 'petits détails.',
+    description: 'Tatouages temporaires de supporters et emblèmes d’équipes pour les soirs de match, les photos et l’ambiance du stade.',
   },
   Survette: {
-    heading: 'Survette',
-    accent: 'training style.',
-    description: 'Hoodies, tracksuits, training tops, and warm fan layers from the national team collections.',
+    heading: 'Survêtements',
+    accent: 'style entraînement.',
+    description: 'Sweats, survêtements, hauts d’entraînement et couches chaudes inspirés des collections des équipes nationales.',
   },
 };
 
@@ -302,7 +320,7 @@ function CategoryPage({ categoryName, products, teams, likedProducts, onLike, on
     <>
       <section className="category-hero">
         <div>
-          <p className="eyebrow">Shop by category</p>
+          <p className="eyebrow">Boutique par catégorie</p>
           <h1>{pageCopy.heading}<br /><em>{pageCopy.accent}</em></h1>
           <p>{pageCopy.description}</p>
         </div>
@@ -311,22 +329,15 @@ function CategoryPage({ categoryName, products, teams, likedProducts, onLike, on
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder={`Search ${categoryName.toLowerCase()}`}
-            aria-label={`Search ${categoryName}`}
+            placeholder={`Rechercher ${getCategoryLabel(categoryName).toLowerCase()}`}
+            aria-label={`Rechercher ${getCategoryLabel(categoryName)}`}
           />
         </label>
       </section>
 
       <section className="catalog-section shop-catalog category-catalog">
-        <div className="section-heading">
-          <div>
-            <h2>{categoryName} products.</h2>
-          </div>
-          <p>{visibleProducts.length} products</p>
-        </div>
-
         <div className="filter-row category-team-row">
-          <button className={teamFilter === 'All' ? 'active' : ''} onClick={() => setTeamFilter('All')}>All teams</button>
+          <button className={teamFilter === 'All' ? 'active' : ''} onClick={() => setTeamFilter('All')}>Toutes les équipes</button>
           {availableTeams.map((team) => (
             <button key={team.id} className={teamFilter === team.id ? 'active' : ''} onClick={() => setTeamFilter(team.id)}>
               {team.name}
@@ -352,9 +363,9 @@ function CategoryPage({ categoryName, products, teams, likedProducts, onLike, on
           </div>
         ) : (
           <div className="empty-state">
-            <h3>No products found</h3>
-            <p>Try another team or search word.</p>
-            <button onClick={resetFilters}>Reset filters</button>
+            <h3>Aucun produit trouvé</h3>
+            <p>Essayez une autre équipe ou un autre mot-clé.</p>
+            <button onClick={resetFilters}>Réinitialiser les filtres</button>
           </div>
         )}
       </section>
@@ -372,6 +383,7 @@ function ProductPage({ product, team, liked, onLike, onBack, onAdd, onCheckout }
   const [quantity, setQuantity] = useState(1);
   const gallery = product.gallery?.length ? product.gallery : [getProductImage(product)];
   const [selectedImage, setSelectedImage] = useState(gallery[0]);
+  const [isZoomOpen, setIsZoomOpen] = useState(false);
   const galleryRef = useRef(null);
   const dragStateRef = useRef({ active: false, startX: 0, startScrollLeft: 0 });
   const [canScrollGalleryPrev, setCanScrollGalleryPrev] = useState(false);
@@ -394,6 +406,7 @@ function ProductPage({ product, team, liked, onLike, onBack, onAdd, onCheckout }
 
   useEffect(() => {
     setSelectedImage(gallery[0]);
+    setIsZoomOpen(false);
     const node = galleryRef.current;
     if (!node) return;
     node.scrollLeft = 0;
@@ -403,6 +416,26 @@ function ProductPage({ product, team, liked, onLike, onBack, onAdd, onCheckout }
   useEffect(() => {
     updateGalleryNav();
   }, [gallery.length]);
+
+  useEffect(() => {
+    if (!isZoomOpen) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setIsZoomOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isZoomOpen]);
 
   const handleGalleryPointerDown = (event) => {
     const node = galleryRef.current;
@@ -438,25 +471,39 @@ function ProductPage({ product, team, liked, onLike, onBack, onAdd, onCheckout }
 
   return (
     <section className="product-page">
-      <button className="back-button" onClick={onBack}><Icon name="back" /> Back to shop</button>
+      <button className="back-button" onClick={onBack}><Icon name="back" /> Retour à la boutique</button>
       <div className="product-detail-grid">
         <div className="detail-media">
-          <div className={`detail-image ${product.category === 'Jerseys' ? 'jersey-detail-image' : ''}`} style={{ '--product-color': product.color }}>
+          <div
+            className={`detail-image ${product.category === 'Jerseys' ? 'jersey-detail-image' : ''}`}
+            style={{ '--product-color': product.color }}
+            onClick={() => setIsZoomOpen(true)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                setIsZoomOpen(true);
+              }
+            }}
+            role="button"
+            tabIndex="0"
+            aria-label={`Zoomer l'image de ${product.name}`}
+          >
             {product.badge && <span className="product-badge">{product.badge}</span>}
             <img src={selectedImage} alt={product.name} />
+            <span className="detail-image-zoom-hint">Touchez pour zoomer</span>
           </div>
 
           {gallery.length > 1 && (
             <div className="detail-gallery-wrap">
               <div className="detail-gallery-toolbar">
-                <strong>Image variants</strong>
+                <strong>Variantes d’image</strong>
                 {gallery.length > 3 && (
                   <div className="detail-gallery-nav">
                     <button
                       type="button"
                       onClick={() => scrollGalleryByStep(-1)}
                       disabled={!canScrollGalleryPrev}
-                      aria-label="Previous gallery images"
+                      aria-label="Images précédentes"
                     >
                       <Icon name="back" />
                     </button>
@@ -464,7 +511,7 @@ function ProductPage({ product, team, liked, onLike, onBack, onAdd, onCheckout }
                       type="button"
                       onClick={() => scrollGalleryByStep(1)}
                       disabled={!canScrollGalleryNext}
-                      aria-label="Next gallery images"
+                      aria-label="Images suivantes"
                     >
                       <Icon name="arrow" />
                     </button>
@@ -486,7 +533,7 @@ function ProductPage({ product, team, liked, onLike, onBack, onAdd, onCheckout }
                     type="button"
                     className={selectedImage === image ? 'active' : ''}
                     onClick={() => setSelectedImage(image)}
-                    aria-label={`Show product image ${index + 1}`}
+                    aria-label={`Afficher l'image produit ${index + 1}`}
                   >
                     <img src={image} alt="" />
                   </button>
@@ -496,15 +543,15 @@ function ProductPage({ product, team, liked, onLike, onBack, onAdd, onCheckout }
           )}
         </div>
         <div className="detail-copy">
-          <p className="eyebrow">{team.name} / {product.category}</p>
+          <p className="eyebrow">{team.name} / {getCategoryLabel(product.category)}</p>
           <h1>{product.name}</h1>
           <p className="detail-price">{formatPrice(product.price)} {product.oldPrice && <span>{formatPrice(product.oldPrice)}</span>}</p>
           <p className="detail-description">
-            A supporter essential with a comfortable everyday fit, premium finish, and colors inspired by {team.name}.
+            Un essentiel de supporter avec une coupe confortable au quotidien, une finition premium et des couleurs inspirées de {team.name}.
           </p>
 
           <div className="product-option">
-            <div className="option-heading"><strong>Select size</strong><span>Size guide</span></div>
+            <div className="option-heading"><strong>Choisir la taille</strong><span>Guide des tailles</span></div>
             <div className="size-list">
               {sizes.map((item) => (
                 <button key={item} className={size === item ? 'active' : ''} onClick={() => setSize(item)}>{item}</button>
@@ -513,32 +560,54 @@ function ProductPage({ product, team, liked, onLike, onBack, onAdd, onCheckout }
           </div>
 
           <div className="product-option">
-            <strong>Quantity</strong>
+            <strong>Quantité</strong>
             <div className="quantity-control">
-              <button onClick={() => setQuantity((value) => Math.max(1, value - 1))} aria-label="Decrease quantity"><Icon name="minus" /></button>
+              <button onClick={() => setQuantity((value) => Math.max(1, value - 1))} aria-label="Diminuer la quantité"><Icon name="minus" /></button>
               <span>{quantity}</span>
-              <button onClick={() => setQuantity((value) => value + 1)} aria-label="Increase quantity"><Icon name="plus" /></button>
+              <button onClick={() => setQuantity((value) => value + 1)} aria-label="Augmenter la quantité"><Icon name="plus" /></button>
             </div>
           </div>
 
           <div className="detail-actions">
-            <button className="add-bag-button" onClick={() => onAdd(product, size, quantity)}>Add to bag — {formatPrice(product.price * quantity)}</button>
+            <button className="add-bag-button" onClick={() => onAdd(product, size, quantity)}>Ajouter au panier — {formatPrice(product.price * quantity)}</button>
             <button
               className={`detail-heart ${liked ? 'liked' : ''}`}
               onClick={() => onLike(product.id)}
-              aria-label="Toggle favorite"
+              aria-label="Basculer le favori"
             ><Icon name="heart" /></button>
           </div>
 
-          <button className="buy-now-button" onClick={() => onCheckout(product, size, quantity)}>Buy now</button>
+          <button className="buy-now-button" onClick={() => onCheckout(product, size, quantity)}>Acheter maintenant</button>
 
           <div className="detail-benefits">
-            <span><strong>Fast delivery</strong> Dispatched within 48 hours</span>
-            <span><strong>Easy returns</strong> Return within 30 days</span>
-            <span><strong>Secure order</strong> Confirm directly on WhatsApp</span>
+            <span><strong>Livraison rapide</strong> Expédié sous 48 heures</span>
+            <span><strong>Retours faciles</strong> Retour sous 30 jours</span>
+            <span><strong>Commande sécurisée</strong> Confirmation directe sur WhatsApp</span>
           </div>
         </div>
       </div>
+
+      {isZoomOpen && (
+        <div
+          className="detail-zoom-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Image agrandie de ${product.name}`}
+          onClick={() => setIsZoomOpen(false)}
+        >
+          <button
+            type="button"
+            className="detail-zoom-close"
+            onClick={() => setIsZoomOpen(false)}
+            aria-label="Fermer l’image agrandie"
+          >
+            <Icon name="close" />
+          </button>
+          <div className="detail-zoom-stage" onClick={(event) => event.stopPropagation()}>
+            <img src={selectedImage} alt={product.name} />
+          </div>
+        </div>
+      )}
     </section>
   );
 }
@@ -556,20 +625,20 @@ function CheckoutPage({ cart, onBack, onUpdateQuantity, onRemove }) {
     event.preventDefault();
     if (!cart.length) return;
     const orderLines = cart.map((item, index) => (
-      `${index + 1}. ${item.product.name}\nSize: ${item.size}\nQuantity: ${item.quantity}\nPrice: ${formatPrice(item.product.price * item.quantity)}`
+      `${index + 1}. ${item.product.name}\nTaille : ${item.size}\nQuantité : ${item.quantity}\nPrix : ${formatPrice(item.product.price * item.quantity)}`
     )).join('\n\n');
     const message = [
-      'Hello Kitline, I would like to place an order:',
+      'Bonjour Kitline, je souhaite passer une commande :',
       '',
       orderLines,
       '',
-      `Total: ${formatPrice(total)}`,
+      `Total : ${formatPrice(total)}`,
       '',
-      `Name: ${form.name}`,
-      `Phone: ${form.phone}`,
-      `City: ${form.city}`,
-      `Address: ${form.address}`,
-      form.note ? `Note: ${form.note}` : '',
+      `Nom : ${form.name}`,
+      `Téléphone : ${form.phone}`,
+      `Ville : ${form.city}`,
+      `Adresse : ${form.address}`,
+      form.note ? `Note : ${form.note}` : '',
     ].filter(Boolean).join('\n');
 
     if (isSupabaseConfigured) {
@@ -601,35 +670,35 @@ function CheckoutPage({ cart, onBack, onUpdateQuantity, onRemove }) {
 
   return (
     <section className="checkout-page">
-      <button className="back-button" onClick={onBack}><Icon name="back" /> Continue shopping</button>
+      <button className="back-button" onClick={onBack}><Icon name="back" /> Continuer vos achats</button>
       <div className="checkout-heading">
-        <p className="eyebrow">Final step</p>
-        <h1>Complete your order.</h1>
-        <p>Fill in your delivery details, then confirm the order through WhatsApp.</p>
+        <p className="eyebrow">Dernière étape</p>
+        <h1>Finalisez votre commande.</h1>
+        <p>Renseignez vos informations de livraison, puis confirmez la commande via WhatsApp.</p>
       </div>
 
       <div className="checkout-grid">
         <form className="checkout-form" onSubmit={submitOrder}>
-          <h2>Delivery details</h2>
+          <h2>Détails de livraison</h2>
           <div className="form-grid">
-            <label>Full name<input required name="name" value={form.name} onChange={updateForm} placeholder="Your full name" /></label>
-            <label>Phone / WhatsApp<input required name="phone" value={form.phone} onChange={updateForm} placeholder="+212 6..." /></label>
-            <label>City<input required name="city" value={form.city} onChange={updateForm} placeholder="Your city" /></label>
-            <label className="full-field">Delivery address<input required name="address" value={form.address} onChange={updateForm} placeholder="Street, area, building..." /></label>
-            <label className="full-field">Order note<textarea name="note" value={form.note} onChange={updateForm} placeholder="Optional: player name, jersey number, preferred color..." /></label>
+            <label>Nom complet<input required name="name" value={form.name} onChange={updateForm} placeholder="Votre nom complet" /></label>
+            <label>Téléphone / WhatsApp<input required name="phone" value={form.phone} onChange={updateForm} placeholder="+212 6..." /></label>
+            <label>Ville<input required name="city" value={form.city} onChange={updateForm} placeholder="Votre ville" /></label>
+            <label className="full-field">Adresse de livraison<input required name="address" value={form.address} onChange={updateForm} placeholder="Rue, quartier, immeuble..." /></label>
+            <label className="full-field">Note de commande<textarea name="note" value={form.note} onChange={updateForm} placeholder="Optionnel : nom du joueur, numéro du maillot, couleur souhaitée..." /></label>
           </div>
-          <button className="whatsapp-order" type="submit" disabled={!cart.length}><Icon name="whatsapp" /> Order via WhatsApp — {formatPrice(total)}</button>
-          <p className="form-note">WhatsApp will open with your complete order ready to send.</p>
+          <button className="whatsapp-order" type="submit" disabled={!cart.length}><Icon name="whatsapp" /> Commander via WhatsApp — {formatPrice(total)}</button>
+          <p className="form-note">WhatsApp s’ouvrira avec votre commande complète prête à être envoyée.</p>
         </form>
 
         <aside className="order-summary">
-          <div className="summary-title"><h2>Your order</h2><span>{cart.reduce((sum, item) => sum + item.quantity, 0)} items</span></div>
+          <div className="summary-title"><h2>Votre commande</h2><span>{cart.reduce((sum, item) => sum + item.quantity, 0)} article(s)</span></div>
           {cart.length ? cart.map((item) => (
             <article className="cart-item" key={item.key}>
               <img src={getProductImage(item.product)} alt={item.product.name} />
               <div>
                 <h3>{item.product.name}</h3>
-                <p>Size: {item.size}</p>
+                <p>Taille : {item.size}</p>
                 <div className="cart-item-bottom">
                   <div className="quantity-control small">
                     <button type="button" onClick={() => onUpdateQuantity(item.key, -1)}><Icon name="minus" /></button>
@@ -639,13 +708,13 @@ function CheckoutPage({ cart, onBack, onUpdateQuantity, onRemove }) {
                   <strong>{formatPrice(item.product.price * item.quantity)}</strong>
                 </div>
               </div>
-              <button className="remove-item" onClick={() => onRemove(item.key)} aria-label={`Remove ${item.product.name}`}><Icon name="trash" /></button>
+              <button className="remove-item" onClick={() => onRemove(item.key)} aria-label={`Retirer ${item.product.name}`}><Icon name="trash" /></button>
             </article>
           )) : (
-            <div className="cart-empty"><Icon name="bag" /><h3>Your bag is empty</h3><p>Add a product before checking out.</p></div>
+            <div className="cart-empty"><Icon name="bag" /><h3>Votre panier est vide</h3><p>Ajoutez un produit avant de finaliser la commande.</p></div>
           )}
           <div className="summary-total"><span>Total</span><strong>{formatPrice(total)}</strong></div>
-          <p className="delivery-note">Delivery cost is confirmed on WhatsApp based on your city.</p>
+          <p className="delivery-note">Les frais de livraison sont confirmés sur WhatsApp selon votre ville.</p>
         </aside>
       </div>
     </section>
@@ -653,7 +722,7 @@ function CheckoutPage({ cart, onBack, onUpdateQuantity, onRemove }) {
 }
 
 function CustomPrintPage({ teams, products, selectedTeamId, onBack }) {
-  const [printName, setPrintName] = useState('YOUR NAME');
+  const [printName, setPrintName] = useState('VOTRE NOM');
   const [printNumber, setPrintNumber] = useState('10');
   const [size, setSize] = useState('M');
   const [quantity, setQuantity] = useState(1);
@@ -663,7 +732,7 @@ function CustomPrintPage({ teams, products, selectedTeamId, onBack }) {
   const jersey = products.find((product) => product.teamId === team.id && product.id.endsWith('-home'));
   const jerseyImage = jerseyBackByTeam[team.id] || (jersey ? getProductImage(jersey) : '');
   const printPlacement = jerseyPrintByTeam[team.id] || {};
-  const displayName = printName.trim().toUpperCase() || 'YOUR NAME';
+  const displayName = printName.trim().toUpperCase() || 'VOTRE NOM';
   const displayNumber = String(printNumber || '10').replace(/\D/g, '').slice(0, 2) || '10';
   const printColor = printPlacement.color || '#ffffff';
   const printOutline = printPlacement.outline || 'rgba(0,0,0,.7)';
@@ -678,19 +747,19 @@ function CustomPrintPage({ teams, products, selectedTeamId, onBack }) {
   const submitCustomOrder = (event) => {
     event.preventDefault();
     const message = [
-      'Hello Kitline, I would like to order my Your Jersey design:',
+      'Bonjour Kitline, je souhaite commander mon maillot personnalisé :',
       '',
-      `Team: ${team.name}`,
-      `Print name: ${displayName}`,
-      `Print number: ${displayNumber}`,
-      `Size: ${size}`,
-      `Quantity: ${quantity}`,
-      `Total: ${formatPrice(total)}`,
+      `Équipe : ${team.name}`,
+      `Nom imprimé : ${displayName}`,
+      `Numéro imprimé : ${displayNumber}`,
+      `Taille : ${size}`,
+      `Quantité : ${quantity}`,
+      `Total : ${formatPrice(total)}`,
       '',
-      `Customer name: ${customer.name}`,
-      `Phone: ${customer.phone}`,
-      `City: ${customer.city}`,
-      customer.note ? `Note: ${customer.note}` : '',
+      `Nom du client : ${customer.name}`,
+      `Téléphone : ${customer.phone}`,
+      `Ville : ${customer.city}`,
+      customer.note ? `Note : ${customer.note}` : '',
     ].filter(Boolean).join('\n');
 
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
@@ -699,12 +768,12 @@ function CustomPrintPage({ teams, products, selectedTeamId, onBack }) {
 
   return (
     <section className="custom-page">
-      <button className="back-button" onClick={onBack}><Icon name="back" /> Back to shop</button>
+      <button className="back-button" onClick={onBack}><Icon name="back" /> Retour à la boutique</button>
 
       <div className="custom-heading">
-        <p className="eyebrow">Your Jersey</p>
-        <h1>Create Your Jersey.</h1>
-        <p>Choose a team, enter your name and number, preview it live, then send the order by WhatsApp.</p>
+        <p className="eyebrow">Votre maillot</p>
+        <h1>Créez votre maillot.</h1>
+        <p>Choisissez une équipe, saisissez votre nom et votre numéro, prévisualisez en direct puis envoyez la commande via WhatsApp.</p>
       </div>
 
       <div className="custom-grid">
@@ -719,7 +788,7 @@ function CustomPrintPage({ teams, products, selectedTeamId, onBack }) {
           }}
         >
           <div className="custom-preview-stage">
-            {jerseyImage && <img src={jerseyImage} alt={`${team.name} jersey back preview`} />}
+            {jerseyImage && <img src={jerseyImage} alt={`Aperçu du dos du maillot ${team.name}`} />}
             <div className="jersey-print-layer" aria-hidden="true">
               <span className="print-name">{displayName}</span>
               <span className="print-number">{displayNumber}</span>
@@ -727,34 +796,34 @@ function CustomPrintPage({ teams, products, selectedTeamId, onBack }) {
           </div>
           <div className="custom-preview-meta">
             <TeamMark team={team} small />
-            <span>{team.name} Your Jersey</span>
+            <span>{team.name} Votre maillot</span>
           </div>
         </div>
 
         <form className="custom-form" onSubmit={submitCustomOrder}>
-          <h2>Personalize Your Jersey</h2>
+          <h2>Personnalisez votre maillot</h2>
 
           <div className="custom-selected-team">
             <TeamMark team={team} small />
             <div>
-              <span>Selected from sidebar</span>
+              <span>Sélectionné depuis la barre latérale</span>
               <strong>{team.name}</strong>
-              <p>Use the vertical team sidebar to change the jersey preview.</p>
+              <p>Utilisez la barre latérale verticale des équipes pour changer l’aperçu du maillot.</p>
             </div>
           </div>
 
           <div className="form-grid compact">
             <label>
-              Print name
+              Nom à imprimer
               <input
                 maxLength="12"
                 value={printName}
                 onChange={(event) => setPrintName(event.target.value)}
-                placeholder="Example: AMINE"
+                placeholder="Exemple : AMINE"
               />
             </label>
             <label>
-              Number
+              Numéro
               <input
                 inputMode="numeric"
                 maxLength="2"
@@ -766,7 +835,7 @@ function CustomPrintPage({ teams, products, selectedTeamId, onBack }) {
           </div>
 
           <div className="product-option custom-option">
-            <div className="option-heading"><strong>Select size</strong><span>Your Jersey print included</span></div>
+            <div className="option-heading"><strong>Choisir la taille</strong><span>Impression incluse</span></div>
             <div className="size-list">
               {['S', 'M', 'L', 'XL', '2XL'].map((item) => (
                 <button type="button" key={item} className={size === item ? 'active' : ''} onClick={() => setSize(item)}>{item}</button>
@@ -775,24 +844,24 @@ function CustomPrintPage({ teams, products, selectedTeamId, onBack }) {
           </div>
 
           <div className="product-option custom-option">
-            <strong>Quantity</strong>
+            <strong>Quantité</strong>
             <div className="quantity-control">
-              <button type="button" onClick={() => setQuantity((value) => Math.max(1, value - 1))} aria-label="Decrease quantity"><Icon name="minus" /></button>
+              <button type="button" onClick={() => setQuantity((value) => Math.max(1, value - 1))} aria-label="Diminuer la quantité"><Icon name="minus" /></button>
               <span>{quantity}</span>
-              <button type="button" onClick={() => setQuantity((value) => value + 1)} aria-label="Increase quantity"><Icon name="plus" /></button>
+              <button type="button" onClick={() => setQuantity((value) => value + 1)} aria-label="Augmenter la quantité"><Icon name="plus" /></button>
             </div>
           </div>
 
-          <h2 className="custom-form-subtitle">Contact details</h2>
+          <h2 className="custom-form-subtitle">Coordonnées</h2>
           <div className="form-grid compact">
-            <label>Full name<input required name="name" value={customer.name} onChange={updateCustomer} placeholder="Your name" /></label>
+            <label>Nom complet<input required name="name" value={customer.name} onChange={updateCustomer} placeholder="Votre nom" /></label>
             <label>WhatsApp<input required name="phone" value={customer.phone} onChange={updateCustomer} placeholder="+212 6..." /></label>
-            <label>City<input required name="city" value={customer.city} onChange={updateCustomer} placeholder="Your city" /></label>
-            <label>Note<input name="note" value={customer.note} onChange={updateCustomer} placeholder="Optional details" /></label>
+            <label>Ville<input required name="city" value={customer.city} onChange={updateCustomer} placeholder="Votre ville" /></label>
+            <label>Note<input name="note" value={customer.note} onChange={updateCustomer} placeholder="Détails optionnels" /></label>
           </div>
 
           <button className="whatsapp-order custom-submit" type="submit">
-            <Icon name="whatsapp" /> Order Your Jersey — {formatPrice(total)}
+            <Icon name="whatsapp" /> Commander votre maillot — {formatPrice(total)}
           </button>
         </form>
       </div>
@@ -848,7 +917,7 @@ export default function App() {
       if (content.heroSlides.length) setStoreHeroSlides(content.heroSlides);
       setContentNotice('');
     } catch (error) {
-      setContentNotice(`Using local content because Supabase could not load: ${error.message}`);
+      setContentNotice(`Contenu local utilisé car Supabase n’a pas pu être chargé : ${error.message}`);
     }
   };
 
@@ -934,7 +1003,7 @@ export default function App() {
         ? current.map((item) => item.key === key ? { ...item, quantity: item.quantity + quantity } : item)
         : [...current, { key, product, size, quantity }];
     });
-    setNotice(`${product.name} added to your bag`);
+    setNotice(`${product.name} a été ajouté à votre panier`);
     window.setTimeout(() => setNotice(''), 2200);
   };
 
@@ -959,19 +1028,19 @@ export default function App() {
   return (
     <div className={`app-shell ${view === 'dashboard' ? 'dashboard-open' : ''}`}>
       <header className="site-header">
-        <button className="brand brand-button" onClick={showHome} aria-label="Kitline home">
+        <button className="brand brand-button" onClick={showHome} aria-label="Accueil Kitline">
           <span className="brand-ball">K</span>
           <span>KITLINE</span>
         </button>
 
-        <nav className={menuOpen ? 'main-nav open' : 'main-nav'} aria-label="Main navigation">
-          <a href="/" onClick={(event) => { event.preventDefault(); showHome(); setMenuOpen(false); }}>Home</a>
-          <a href="/shop" onClick={(event) => { event.preventDefault(); showShop(); setMenuOpen(false); }}>Shop</a>
-          <a href="/jerseys" onClick={(event) => { event.preventDefault(); showCatalogView('jerseys'); setMenuOpen(false); }}>Jerseys</a>
-          <a href="/sandals" onClick={(event) => { event.preventDefault(); showCatalogView('sandals'); setMenuOpen(false); }}>Sandals</a>
-          <a href="/tattoos" onClick={(event) => { event.preventDefault(); showCatalogView('tattoos'); setMenuOpen(false); }}>Tattoos</a>
-          <a href="/survette" onClick={(event) => { event.preventDefault(); showCatalogView('survette'); setMenuOpen(false); }}>Survette</a>
-          <a href="/custom-print" onClick={(event) => { event.preventDefault(); showCustom(); setMenuOpen(false); }}>Your Jersey</a>
+        <nav className={menuOpen ? 'main-nav open' : 'main-nav'} aria-label="Navigation principale">
+          <a href="/" onClick={(event) => { event.preventDefault(); showHome(); setMenuOpen(false); }}>Accueil</a>
+          <a href="/shop" onClick={(event) => { event.preventDefault(); showShop(); setMenuOpen(false); }}>Boutique</a>
+          <a href="/jerseys" onClick={(event) => { event.preventDefault(); showCatalogView('jerseys'); setMenuOpen(false); }}>Maillots</a>
+          <a href="/sandals" onClick={(event) => { event.preventDefault(); showCatalogView('sandals'); setMenuOpen(false); }}>Sandales</a>
+          <a href="/tattoos" onClick={(event) => { event.preventDefault(); showCatalogView('tattoos'); setMenuOpen(false); }}>Tatouages</a>
+          <a href="/survette" onClick={(event) => { event.preventDefault(); showCatalogView('survette'); setMenuOpen(false); }}>Survêtements</a>
+          <a href="/custom-print" onClick={(event) => { event.preventDefault(); showCustom(); setMenuOpen(false); }}>Votre maillot</a>
         </nav>
 
         <div className="header-actions">
@@ -980,24 +1049,23 @@ export default function App() {
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search this team"
-              aria-label="Search products"
+              placeholder="Rechercher dans cette équipe"
+              aria-label="Rechercher des produits"
             />
           </label>
-          <button className="header-icon" aria-label={`${favorites.length} favorites`}>
+          <button className="header-icon" aria-label={`${favorites.length} favoris`}>
             <Icon name="heart" /><span>{favorites.length}</span>
           </button>
-          <button className="header-icon" onClick={showCheckout} aria-label={`${cart.length} products in bag`}>
+          <button className="header-icon" onClick={showCheckout} aria-label={`${cart.length} produits dans le panier`}>
             <Icon name="bag" /><span>{cart.reduce((sum, item) => sum + item.quantity, 0)}</span>
           </button>
-          <button className="menu-button" onClick={() => setMenuOpen((value) => !value)} aria-label="Toggle menu">
+          <button className="menu-button" onClick={() => setMenuOpen((value) => !value)} aria-label="Ouvrir ou fermer le menu">
             <Icon name={menuOpen ? 'close' : 'menu'} />
           </button>
         </div>
       </header>
 
       {view !== 'dashboard' && <aside className="team-sidebar" id="teams">
-        <p className="sidebar-title">Select team</p>
         <div className="team-list">
           {sidebarTeams.map((team) => (
             <button
@@ -1005,7 +1073,7 @@ export default function App() {
               className={`team-button ${selectedTeamId === team.id ? 'active' : ''}`}
               onClick={() => selectTeam(team.id, { stayOnCustom: view === 'custom' })}
               title={team.name}
-              aria-label={`Show ${team.name} products`}
+              aria-label={`Afficher les produits de ${team.name}`}
             >
               <TeamMark team={team} sidebar />
               <span className="team-tooltip">{team.name}</span>
@@ -1036,26 +1104,26 @@ export default function App() {
           <>
         <section className="hero shop-hero" style={{ '--hero-color': selectedTeam.colors[0], '--hero-accent': selectedTeam.colors[1] }}>
           <div className="hero-copy">
-            <p className="eyebrow">Team shop</p>
+            <p className="eyebrow">Boutique équipe</p>
             <h1>{selectedTeam.name}<br /><em>collection.</em></h1>
             <p className="hero-description">
-              Jerseys, sandals, tattoos, and fan gear in one place.
+              Maillots, sandales, tatouages et articles de supporter au même endroit.
             </p>
           </div>
         </section>
 
         <section className="catalog-section shop-catalog" id="shop">
-          <div className="section-heading">
+          {/* <div className="section-heading">
             <div>
               <h2>{selectedTeam.name} products.</h2>
             </div>
             <p>{filteredProducts.length} products</p>
-          </div>
+          </div> */}
 
           <div className="filter-row">
             {categoryFilters.map((item) => (
               <button key={item} className={category === item ? 'active' : ''} onClick={() => setCategory(item)}>
-                {item}
+                {getCategoryLabel(item)}
               </button>
             ))}
           </div>
@@ -1075,18 +1143,18 @@ export default function App() {
             </div>
           ) : (
             <div className="empty-state">
-              <h3>No products found</h3>
-              <p>Try a different category or search term.</p>
-              <button onClick={() => { setSearch(''); setCategory('All'); }}>Reset filters</button>
+              <h3>Aucun produit trouvé</h3>
+              <p>Essayez une autre catégorie ou un autre mot-clé.</p>
+              <button onClick={() => { setSearch(''); setCategory('All'); }}>Réinitialiser les filtres</button>
             </div>
           )}
         </section>
 
         <section className="story-section" id="story">
-          <p className="eyebrow">From the stands to the street</p>
-          <h2>Your team is not just who you watch.<br />It is part of who you are.</h2>
+          <p className="eyebrow">Des tribunes à la rue</p>
+          <h2>Votre équipe n’est pas seulement celle que vous regardez.<br />Elle fait partie de qui vous êtes.</h2>
           <div className="story-points">
-            <span>Premium feel</span><span>Supporter approved</span><span>Worldwide delivery</span>
+            <span>Finition premium</span><span>Approuvé par les supporters</span><span>Livraison mondiale</span>
           </div>
         </section>
           </>
@@ -1183,7 +1251,7 @@ export default function App() {
 
       <footer>
         <a className="brand" href="#"><span className="brand-ball">K</span><span>KITLINE</span></a>
-        <p>National colors. Everyday style.</p>
+        <p>Couleurs nationales. Style au quotidien.</p>
         <p>© 2026 Kitline</p>
       </footer>
 

@@ -16,7 +16,7 @@ const PRODUCT_EMPTY = {
   id: '',
   slug: '',
   team_slug: '',
-  category_name: 'Jerseys',
+  category_name: 'Maillots',
   name: '',
   description: '',
   price: 0,
@@ -89,7 +89,7 @@ function productToForm(row = PRODUCT_EMPTY) {
     id: (row.dbId || row.slug) ? row.id : '',
     slug: row.slug || row.id || '',
     team_slug: row.team_slug || row.teamId || '',
-    category_name: row.category_name || row.category || 'Jerseys',
+    category_name: row.category_name || row.category || 'Maillots',
     primary_image_url: row.primary_image_url || row.image || '',
     gallery: Array.isArray(row.gallery) ? row.gallery.join('\n') : row.gallery || '',
     old_price: row.old_price ?? row.oldPrice ?? '',
@@ -229,13 +229,13 @@ export default function DashboardPage({ seedProducts, seedTeams, seedCategories,
       setUnlocked(true);
       setPassword('');
     } else {
-      setStatus('Wrong dashboard password.');
+      setStatus('Mot de passe du tableau de bord incorrect.');
     }
   }
 
   async function saveRow(tableKey, payload, reset) {
     if (!isSupabaseConfigured) {
-      setStatus('Connect Supabase env keys before saving dashboard changes.');
+      setStatus('Ajoutez les clés d’environnement Supabase avant d’enregistrer les modifications.');
       return;
     }
     setLoading(true);
@@ -245,7 +245,7 @@ export default function DashboardPage({ seedProducts, seedTeams, seedCategories,
       reset();
       await loadDashboard();
       await onRefreshStore();
-      setStatus('Saved.');
+      setStatus('Enregistré.');
     } catch (error) {
       setStatus(error.message);
     } finally {
@@ -254,14 +254,14 @@ export default function DashboardPage({ seedProducts, seedTeams, seedCategories,
   }
 
   async function removeRow(tableKey, id) {
-    if (!window.confirm('Delete this item?')) return;
+    if (!window.confirm('Supprimer cet élément ?')) return;
     setLoading(true);
     setStatus('');
     try {
       await deleteRow(TABLES[tableKey], id);
       await loadDashboard();
       await onRefreshStore();
-      setStatus('Deleted.');
+      setStatus('Supprimé.');
     } catch (error) {
       setStatus(error.message);
     } finally {
@@ -286,10 +286,10 @@ export default function DashboardPage({ seedProducts, seedTeams, seedCategories,
       const payload = await response.json();
 
       if (!response.ok) {
-        throw new Error(payload.error || 'Image upload failed.');
+        throw new Error(payload.error || 'Échec de l’envoi de l’image.');
       }
 
-      setStatus(`Uploaded ${payload.paths.length} image${payload.paths.length === 1 ? '' : 's'}.`);
+      setStatus(`${payload.paths.length} image${payload.paths.length === 1 ? '' : 's'} téléversée${payload.paths.length === 1 ? '' : 's'}.`);
       return payload.paths;
     } catch (error) {
       setStatus(error.message);
@@ -303,10 +303,10 @@ export default function DashboardPage({ seedProducts, seedTeams, seedCategories,
     return (
       <section className="dashboard-page">
         <form className="dashboard-login" onSubmit={unlockDashboard}>
-          <h1>Dashboard</h1>
-          <p>Enter the dashboard password from `VITE_DASHBOARD_PASSWORD`.</p>
-          <input value={password} onChange={(event) => setPassword(event.target.value)} type="password" placeholder="Password" />
-          <button type="submit">Open dashboard</button>
+          <h1>Tableau de bord</h1>
+          <p>Saisissez le mot de passe du tableau de bord défini dans `VITE_DASHBOARD_PASSWORD`.</p>
+          <input value={password} onChange={(event) => setPassword(event.target.value)} type="password" placeholder="Mot de passe" />
+          <button type="submit">Ouvrir le tableau de bord</button>
           {status && <p className="dashboard-status error">{status}</p>}
         </form>
       </section>
@@ -317,23 +317,23 @@ export default function DashboardPage({ seedProducts, seedTeams, seedCategories,
     <section className="dashboard-page">
       <header className="dashboard-hero">
         <div>
-          <p className="eyebrow">Supabase Admin</p>
-          <h1>Dashboard</h1>
-          <p>Manage the same content your storefront uses: teams, categories, products, hero images, orders, and settings.</p>
+          <p className="eyebrow">Admin Supabase</p>
+          <h1>Tableau de bord</h1>
+          <p>Gérez le même contenu que votre vitrine utilise : équipes, catégories, produits, images vedettes, commandes et réglages.</p>
         </div>
         <div className={isSupabaseConfigured ? 'dashboard-chip ready' : 'dashboard-chip'}>
-          {isSupabaseConfigured ? 'Supabase connected' : 'Supabase env missing'}
+          {isSupabaseConfigured ? 'Supabase connecté' : 'Variables Supabase manquantes'}
         </div>
       </header>
 
-      <nav className="dashboard-tabs" aria-label="Dashboard sections">
+      <nav className="dashboard-tabs" aria-label="Sections du tableau de bord">
         {[
-          ['products', 'Products'],
-          ['categories', 'Categories'],
-          ['teams', 'Teams'],
+          ['products', 'Produits'],
+          ['categories', 'Catégories'],
+          ['teams', 'Équipes'],
           ['hero', 'Hero'],
-          ['orders', 'Orders'],
-          ['settings', 'Settings'],
+          ['orders', 'Commandes'],
+          ['settings', 'Réglages'],
         ].map(([id, label]) => (
           <button key={id} className={activeTab === id ? 'active' : ''} onClick={() => setActiveTab(id)}>
             {label}
@@ -343,14 +343,14 @@ export default function DashboardPage({ seedProducts, seedTeams, seedCategories,
 
       {!isSupabaseConfigured && (
         <p className="dashboard-status error">
-          Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` to `.env` after running `supabase/schema.sql`.
+          Ajoutez `VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY` dans `.env` après avoir exécuté `supabase/schema.sql`.
         </p>
       )}
-      {status && <p className={`dashboard-status ${status.includes('Wrong') || status.includes('failed') || status.includes('Connect') ? 'error' : ''}`}>{status}</p>}
-      {loading && <p className="dashboard-status">Loading...</p>}
+      {status && <p className={`dashboard-status ${status.includes('incorrect') || status.includes('Échec') || status.includes('Ajoutez') ? 'error' : ''}`}>{status}</p>}
+      {loading && <p className="dashboard-status">Chargement...</p>}
 
       {activeTab === 'products' && (
-        <DashboardShell title="Products" description={`${rows.products.length || seedProducts.length} products available`}>
+        <DashboardShell title="Produits" description={`${rows.products.length || seedProducts.length} produits disponibles`}>
           <form
             className="dashboard-form"
             onSubmit={(event) => {
@@ -369,14 +369,14 @@ export default function DashboardPage({ seedProducts, seedTeams, seedCategories,
             }}
           >
             <Field label="Slug"><input required value={productForm.slug} onChange={(event) => setProductForm({ ...productForm, slug: event.target.value })} placeholder="france-home" /></Field>
-            <Field label="Team"><select required value={productForm.team_slug} onChange={(event) => setProductForm({ ...productForm, team_slug: event.target.value })}><option value="">Choose team</option>{teamOptions.map((team) => <option key={team.slug} value={team.slug}>{team.name}</option>)}</select></Field>
-            <Field label="Category"><select value={productForm.category_name} onChange={(event) => setProductForm({ ...productForm, category_name: event.target.value })}>{categoryOptions.map((category) => <option key={category.slug} value={category.name}>{category.name}</option>)}</select></Field>
-            <Field label="Name"><input required value={productForm.name} onChange={(event) => setProductForm({ ...productForm, name: event.target.value })} /></Field>
-            <Field label="Price"><input type="number" value={productForm.price} onChange={(event) => setProductForm({ ...productForm, price: event.target.value })} /></Field>
-            <Field label="Old price"><input type="number" value={productForm.old_price} onChange={(event) => setProductForm({ ...productForm, old_price: event.target.value })} /></Field>
+            <Field label="Équipe"><select required value={productForm.team_slug} onChange={(event) => setProductForm({ ...productForm, team_slug: event.target.value })}><option value="">Choisir une équipe</option>{teamOptions.map((team) => <option key={team.slug} value={team.slug}>{team.name}</option>)}</select></Field>
+            <Field label="Catégorie"><select value={productForm.category_name} onChange={(event) => setProductForm({ ...productForm, category_name: event.target.value })}>{categoryOptions.map((category) => <option key={category.slug} value={category.name}>{category.name}</option>)}</select></Field>
+            <Field label="Nom"><input required value={productForm.name} onChange={(event) => setProductForm({ ...productForm, name: event.target.value })} /></Field>
+            <Field label="Prix"><input type="number" value={productForm.price} onChange={(event) => setProductForm({ ...productForm, price: event.target.value })} /></Field>
+            <Field label="Ancien prix"><input type="number" value={productForm.old_price} onChange={(event) => setProductForm({ ...productForm, old_price: event.target.value })} /></Field>
             <Field label="Badge"><input value={productForm.badge || ''} onChange={(event) => setProductForm({ ...productForm, badge: event.target.value })} /></Field>
-            <Field label="Color"><input type="color" value={productForm.color || '#171816'} onChange={(event) => setProductForm({ ...productForm, color: event.target.value })} /></Field>
-            <Field label="Primary image">
+            <Field label="Couleur"><input type="color" value={productForm.color || '#171816'} onChange={(event) => setProductForm({ ...productForm, color: event.target.value })} /></Field>
+            <Field label="Image principale">
               <ImageUploadControl
                 value={productForm.primary_image_url}
                 onUpload={async (files) => {
@@ -385,7 +385,7 @@ export default function DashboardPage({ seedProducts, seedTeams, seedCategories,
                 }}
               />
             </Field>
-            <Field label="Gallery images">
+            <Field label="Images de galerie">
               <GalleryUploadControl
                 value={productForm.gallery}
                 onUpload={async (files) => {
@@ -401,35 +401,35 @@ export default function DashboardPage({ seedProducts, seedTeams, seedCategories,
               />
             </Field>
             <Field label="Description"><textarea rows="3" value={productForm.description || ''} onChange={(event) => setProductForm({ ...productForm, description: event.target.value })} /></Field>
-            <Field label="Sort order"><input type="number" value={productForm.sort_order} onChange={(event) => setProductForm({ ...productForm, sort_order: event.target.value })} /></Field>
-            <label className="dashboard-check"><input type="checkbox" checked={boolValue(productForm.is_active)} onChange={(event) => setProductForm({ ...productForm, is_active: event.target.checked })} /> Active</label>
-            <div className="dashboard-actions"><button type="submit">Save product</button><button type="button" onClick={() => setProductForm(PRODUCT_EMPTY)}>New product</button></div>
+            <Field label="Ordre d’affichage"><input type="number" value={productForm.sort_order} onChange={(event) => setProductForm({ ...productForm, sort_order: event.target.value })} /></Field>
+            <label className="dashboard-check"><input type="checkbox" checked={boolValue(productForm.is_active)} onChange={(event) => setProductForm({ ...productForm, is_active: event.target.checked })} /> Actif</label>
+            <div className="dashboard-actions"><button type="submit">Enregistrer le produit</button><button type="button" onClick={() => setProductForm(PRODUCT_EMPTY)}>Nouveau produit</button></div>
           </form>
           <DashboardTable rows={rows.products} fallbackRows={seedProducts} onEdit={(row) => setProductForm(productToForm(row))} onDelete={(row) => removeRow('products', row.id)} columns={['slug', 'name', 'team_slug', 'category_name', 'price']} />
         </DashboardShell>
       )}
 
       {activeTab === 'categories' && (
-        <DashboardShell title="Categories" description="Control filter buttons and product grouping.">
+        <DashboardShell title="Catégories" description="Contrôlez les boutons de filtre et le regroupement des produits.">
           <SimpleForm
             form={categoryForm}
             setForm={setCategoryForm}
             fields={['slug', 'name', 'sort_order']}
             onSubmit={() => saveRow('categories', { ...categoryForm, sort_order: Number(categoryForm.sort_order || 100), is_active: boolValue(categoryForm.is_active) }, () => setCategoryForm(CATEGORY_EMPTY))}
-            submitLabel="Save category"
+            submitLabel="Enregistrer la catégorie"
           />
           <DashboardTable rows={rows.categories} fallbackRows={seedCategories} onEdit={(row) => setCategoryForm(categoryToForm(row))} onDelete={(row) => removeRow('categories', row.id)} columns={['slug', 'name', 'sort_order']} />
         </DashboardShell>
       )}
 
       {activeTab === 'teams' && (
-        <DashboardShell title="Teams" description="Manage the right-side team selector and product team metadata.">
+        <DashboardShell title="Équipes" description="Gérez le sélecteur d’équipes à droite et les métadonnées d’équipe des produits.">
           <form className="dashboard-form compact" onSubmit={(event) => { event.preventDefault(); saveRow('teams', { ...teamForm, colors: parseColors(teamForm.colors), sort_order: Number(teamForm.sort_order || 100), is_active: boolValue(teamForm.is_active) }, () => setTeamForm(TEAM_EMPTY)); }}>
             <Field label="Slug"><input required value={teamForm.slug} onChange={(event) => setTeamForm({ ...teamForm, slug: event.target.value })} /></Field>
-            <Field label="Name"><input required value={teamForm.name} onChange={(event) => setTeamForm({ ...teamForm, name: event.target.value })} /></Field>
+            <Field label="Nom"><input required value={teamForm.name} onChange={(event) => setTeamForm({ ...teamForm, name: event.target.value })} /></Field>
             <Field label="Code"><input required value={teamForm.code} onChange={(event) => setTeamForm({ ...teamForm, code: event.target.value.toUpperCase() })} maxLength="4" /></Field>
-            <Field label="Colors"><input value={teamForm.colors} onChange={(event) => setTeamForm({ ...teamForm, colors: event.target.value })} placeholder="#133a8a, #e62b3a" /></Field>
-            <Field label="Logo image">
+            <Field label="Couleurs"><input value={teamForm.colors} onChange={(event) => setTeamForm({ ...teamForm, colors: event.target.value })} placeholder="#133a8a, #e62b3a" /></Field>
+            <Field label="Image du logo">
               <ImageUploadControl
                 value={teamForm.logo_url}
                 onUpload={async (files) => {
@@ -438,19 +438,19 @@ export default function DashboardPage({ seedProducts, seedTeams, seedCategories,
                 }}
               />
             </Field>
-            <Field label="Sort order"><input type="number" value={teamForm.sort_order} onChange={(event) => setTeamForm({ ...teamForm, sort_order: event.target.value })} /></Field>
-            <label className="dashboard-check"><input type="checkbox" checked={boolValue(teamForm.is_active)} onChange={(event) => setTeamForm({ ...teamForm, is_active: event.target.checked })} /> Active</label>
-            <div className="dashboard-actions"><button type="submit">Save team</button><button type="button" onClick={() => setTeamForm(TEAM_EMPTY)}>New team</button></div>
+            <Field label="Ordre d’affichage"><input type="number" value={teamForm.sort_order} onChange={(event) => setTeamForm({ ...teamForm, sort_order: event.target.value })} /></Field>
+            <label className="dashboard-check"><input type="checkbox" checked={boolValue(teamForm.is_active)} onChange={(event) => setTeamForm({ ...teamForm, is_active: event.target.checked })} /> Actif</label>
+            <div className="dashboard-actions"><button type="submit">Enregistrer l’équipe</button><button type="button" onClick={() => setTeamForm(TEAM_EMPTY)}>Nouvelle équipe</button></div>
           </form>
           <DashboardTable rows={rows.teams} fallbackRows={seedTeams} onEdit={(row) => setTeamForm(teamToForm(row))} onDelete={(row) => removeRow('teams', row.id)} columns={['slug', 'name', 'code', 'sort_order']} />
         </DashboardShell>
       )}
 
       {activeTab === 'hero' && (
-        <DashboardShell title="Hero Slides" description="Control the carousel images on the home page.">
+        <DashboardShell title="Slides hero" description="Contrôlez les images du carrousel de la page d’accueil.">
           <form className="dashboard-form compact" onSubmit={(event) => { event.preventDefault(); saveRow('hero', { ...heroForm, sort_order: Number(heroForm.sort_order || 100), is_active: boolValue(heroForm.is_active) }, () => setHeroForm(HERO_EMPTY)); }}>
             <Field label="Slug"><input required value={heroForm.slug} onChange={(event) => setHeroForm({ ...heroForm, slug: event.target.value })} /></Field>
-            <Field label="Hero image">
+            <Field label="Image hero">
               <ImageUploadControl
                 value={heroForm.image_url}
                 onUpload={async (files) => {
@@ -459,29 +459,29 @@ export default function DashboardPage({ seedProducts, seedTeams, seedCategories,
                 }}
               />
             </Field>
-            <Field label="Alt text"><input value={heroForm.alt_text || ''} onChange={(event) => setHeroForm({ ...heroForm, alt_text: event.target.value })} /></Field>
-            <Field label="Sort order"><input type="number" value={heroForm.sort_order} onChange={(event) => setHeroForm({ ...heroForm, sort_order: event.target.value })} /></Field>
-            <label className="dashboard-check"><input type="checkbox" checked={boolValue(heroForm.is_active)} onChange={(event) => setHeroForm({ ...heroForm, is_active: event.target.checked })} /> Active</label>
-            <div className="dashboard-actions"><button type="submit">Save hero slide</button><button type="button" onClick={() => setHeroForm(HERO_EMPTY)}>New hero slide</button></div>
+            <Field label="Texte alternatif"><input value={heroForm.alt_text || ''} onChange={(event) => setHeroForm({ ...heroForm, alt_text: event.target.value })} /></Field>
+            <Field label="Ordre d’affichage"><input type="number" value={heroForm.sort_order} onChange={(event) => setHeroForm({ ...heroForm, sort_order: event.target.value })} /></Field>
+            <label className="dashboard-check"><input type="checkbox" checked={boolValue(heroForm.is_active)} onChange={(event) => setHeroForm({ ...heroForm, is_active: event.target.checked })} /> Actif</label>
+            <div className="dashboard-actions"><button type="submit">Enregistrer le slide hero</button><button type="button" onClick={() => setHeroForm(HERO_EMPTY)}>Nouveau slide hero</button></div>
           </form>
           <DashboardTable rows={rows.hero} fallbackRows={[]} onEdit={(row) => setHeroForm({ ...HERO_EMPTY, ...row })} onDelete={(row) => removeRow('hero', row.id)} columns={['slug', 'image_url', 'alt_text', 'sort_order']} />
         </DashboardShell>
       )}
 
       {activeTab === 'orders' && (
-        <DashboardShell title="Orders" description="Orders submitted through checkout can be stored here before WhatsApp opens.">
+        <DashboardShell title="Commandes" description="Les commandes envoyées via la caisse peuvent être stockées ici avant l’ouverture de WhatsApp.">
           <DashboardTable rows={rows.orders} fallbackRows={[]} columns={['customer_name', 'phone', 'city', 'total', 'status']} />
         </DashboardShell>
       )}
 
       {activeTab === 'settings' && (
-        <DashboardShell title="Settings" description="Store structured settings such as currency, WhatsApp number, and feature flags.">
-          <form className="dashboard-form compact" onSubmit={(event) => { event.preventDefault(); let value; try { value = JSON.parse(settingForm.value); } catch { setStatus('Settings value must be valid JSON.'); return; } saveRow('settings', { ...settingForm, value, sort_order: Number(settingForm.sort_order || 100), is_active: boolValue(settingForm.is_active) }, () => setSettingForm(SETTINGS_EMPTY)); }}>
-            <Field label="Key"><input required value={settingForm.key} onChange={(event) => setSettingForm({ ...settingForm, key: event.target.value })} /></Field>
-            <Field label="Value JSON"><textarea rows="8" value={settingForm.value} onChange={(event) => setSettingForm({ ...settingForm, value: event.target.value })} /></Field>
-            <Field label="Sort order"><input type="number" value={settingForm.sort_order} onChange={(event) => setSettingForm({ ...settingForm, sort_order: event.target.value })} /></Field>
-            <label className="dashboard-check"><input type="checkbox" checked={boolValue(settingForm.is_active)} onChange={(event) => setSettingForm({ ...settingForm, is_active: event.target.checked })} /> Active</label>
-            <div className="dashboard-actions"><button type="submit">Save settings</button><button type="button" onClick={() => setSettingForm(SETTINGS_EMPTY)}>New settings</button></div>
+        <DashboardShell title="Réglages" description="Stockez les réglages structurés comme la devise, le numéro WhatsApp et les options d’activation.">
+          <form className="dashboard-form compact" onSubmit={(event) => { event.preventDefault(); let value; try { value = JSON.parse(settingForm.value); } catch { setStatus('La valeur des réglages doit être un JSON valide.'); return; } saveRow('settings', { ...settingForm, value, sort_order: Number(settingForm.sort_order || 100), is_active: boolValue(settingForm.is_active) }, () => setSettingForm(SETTINGS_EMPTY)); }}>
+            <Field label="Clé"><input required value={settingForm.key} onChange={(event) => setSettingForm({ ...settingForm, key: event.target.value })} /></Field>
+            <Field label="Valeur JSON"><textarea rows="8" value={settingForm.value} onChange={(event) => setSettingForm({ ...settingForm, value: event.target.value })} /></Field>
+            <Field label="Ordre d’affichage"><input type="number" value={settingForm.sort_order} onChange={(event) => setSettingForm({ ...settingForm, sort_order: event.target.value })} /></Field>
+            <label className="dashboard-check"><input type="checkbox" checked={boolValue(settingForm.is_active)} onChange={(event) => setSettingForm({ ...settingForm, is_active: event.target.checked })} /> Actif</label>
+            <div className="dashboard-actions"><button type="submit">Enregistrer les réglages</button><button type="button" onClick={() => setSettingForm(SETTINGS_EMPTY)}>Nouveaux réglages</button></div>
           </form>
           <DashboardTable rows={rows.settings} fallbackRows={[]} onEdit={(row) => setSettingForm(settingToForm(row))} onDelete={(row) => removeRow('settings', row.id)} columns={['key', 'value', 'sort_order']} />
         </DashboardShell>
@@ -493,7 +493,7 @@ export default function DashboardPage({ seedProducts, seedTeams, seedCategories,
 function ImageUploadControl({ value, onUpload }) {
   return (
     <div className="dashboard-upload">
-      <input readOnly required value={value || ''} placeholder="Upload an image to generate the path" />
+      <input readOnly required value={value || ''} placeholder="Téléversez une image pour générer le chemin" />
       <input
         type="file"
         accept="image/*"
@@ -512,7 +512,7 @@ function GalleryUploadControl({ value, onUpload, onClear }) {
 
   return (
     <div className="dashboard-upload">
-      <textarea readOnly rows="5" value={paths.join('\n')} placeholder="Upload gallery images to generate paths" />
+      <textarea readOnly rows="5" value={paths.join('\n')} placeholder="Téléversez des images de galerie pour générer les chemins" />
       <input
         type="file"
         accept="image/*"
@@ -525,7 +525,7 @@ function GalleryUploadControl({ value, onUpload, onClear }) {
       <div className="dashboard-gallery-preview">
         {paths.map((path) => <img key={path} src={path} alt="" />)}
       </div>
-      {paths.length > 0 && <button className="dashboard-link-button" type="button" onClick={onClear}>Clear gallery</button>}
+      {paths.length > 0 && <button className="dashboard-link-button" type="button" onClick={onClear}>Vider la galerie</button>}
     </div>
   );
 }
@@ -538,8 +538,8 @@ function SimpleForm({ form, setForm, fields, onSubmit, submitLabel }) {
           <input required={field !== 'sort_order'} type={field === 'sort_order' ? 'number' : 'text'} value={form[field] || ''} onChange={(event) => setForm({ ...form, [field]: event.target.value })} />
         </Field>
       ))}
-      <label className="dashboard-check"><input type="checkbox" checked={boolValue(form.is_active)} onChange={(event) => setForm({ ...form, is_active: event.target.checked })} /> Active</label>
-      <div className="dashboard-actions"><button type="submit">{submitLabel}</button><button type="button" onClick={() => setForm(fields.includes('image_url') ? HERO_EMPTY : CATEGORY_EMPTY)}>New</button></div>
+      <label className="dashboard-check"><input type="checkbox" checked={boolValue(form.is_active)} onChange={(event) => setForm({ ...form, is_active: event.target.checked })} /> Actif</label>
+      <div className="dashboard-actions"><button type="submit">{submitLabel}</button><button type="button" onClick={() => setForm(fields.includes('image_url') ? HERO_EMPTY : CATEGORY_EMPTY)}>Nouveau</button></div>
     </form>
   );
 }
@@ -549,7 +549,7 @@ function DashboardTable({ rows, fallbackRows, columns, onEdit, onDelete }) {
   const hasPersistedRows = rows.length > 0;
 
   if (!tableRows.length) {
-    return <div className="dashboard-empty">No records yet.</div>;
+    return <div className="dashboard-empty">Aucun enregistrement pour le moment.</div>;
   }
 
   return (
@@ -570,8 +570,8 @@ function DashboardTable({ rows, fallbackRows, columns, onEdit, onDelete }) {
               {(onEdit || onDelete) && (
                 <td>
                   <div className="dashboard-row-actions">
-                    {onEdit && <button type="button" onClick={() => onEdit(row)}>Edit</button>}
-                    {onDelete && hasPersistedRows && row.id && <button type="button" onClick={() => onDelete(row)}>Delete</button>}
+                    {onEdit && <button type="button" onClick={() => onEdit(row)}>Modifier</button>}
+                    {onDelete && hasPersistedRows && row.id && <button type="button" onClick={() => onDelete(row)}>Supprimer</button>}
                   </div>
                 </td>
               )}
@@ -586,6 +586,6 @@ function DashboardTable({ rows, fallbackRows, columns, onEdit, onDelete }) {
 function formatCell(value) {
   if (Array.isArray(value)) return value.join(', ');
   if (value && typeof value === 'object') return JSON.stringify(value);
-  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+  if (typeof value === 'boolean') return value ? 'Oui' : 'Non';
   return String(value ?? '');
 }

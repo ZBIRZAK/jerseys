@@ -1,0 +1,22 @@
+<svg width="596" height="508" viewBox="0 0 596 508" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="cutout" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feColorMatrix
+        in="SourceGraphic"
+        type="matrix"
+        values="
+          0 0 0 0 1
+          0 0 0 0 1
+          0 0 0 0 1
+          -0.2126 -0.7152 -0.0722 0 1"
+      />
+    </filter>
+  </defs>
+  <image
+    href="/icons/football-boot-ball-source.png"
+    width="596"
+    height="508"
+    preserveAspectRatio="xMidYMid meet"
+    filter="url(#cutout)"
+  />
+</svg>
